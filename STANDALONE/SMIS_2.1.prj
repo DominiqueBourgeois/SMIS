@@ -1,0 +1,119 @@
+<deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
+  <configuration build-checksum="871850528" file="C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\STANDALONE\SMIS_2.1.prj" location="C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\STANDALONE" name="SMIS_2.1" preferred-package-location="C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\STANDALONE\SMIS_2.1\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+    <param.appname>SMIS</param.appname>
+    <param.icon />
+    <param.icons />
+    <param.version>2.1</param.version>
+    <param.authnamewatermark>Dominique Bourgeois</param.authnamewatermark>
+    <param.email>dominique.bourgeois@ibs.fr</param.email>
+    <param.company>Institut de Biologie Structurale</param.company>
+    <param.summary>Single Molecule Imaging Simulator</param.summary>
+    <param.description />
+    <param.screenshot>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.0\GUI\SMIS_LOGO.png</param.screenshot>
+    <param.guid />
+    <param.installpath.string>\Institut de Biologie Structurale\SMIS\</param.installpath.string>
+    <param.installpath.combo>option.installpath.programfiles</param.installpath.combo>
+    <param.logo />
+    <param.install.notes />
+    <param.target.install.notes />
+    <param.intermediate>${PROJECT_ROOT}\SMIS_2.1\for_testing</param.intermediate>
+    <param.files.only>${PROJECT_ROOT}\SMIS_2.1\for_redistribution_files_only</param.files.only>
+    <param.output>${PROJECT_ROOT}\SMIS_2.1\for_redistribution</param.output>
+    <param.logdir>${PROJECT_ROOT}\SMIS_2.1</param.logdir>
+    <param.enable.clean.build>false</param.enable.clean.build>
+    <param.user.defined.mcr.options />
+    <param.target.type>subtarget.standalone</param.target.type>
+    <param.support.packages />
+    <param.web.mcr>true</param.web.mcr>
+    <param.package.mcr>false</param.package.mcr>
+    <param.no.mcr>false</param.no.mcr>
+    <param.web.mcr.name>MyAppInstaller_web</param.web.mcr.name>
+    <param.package.mcr.name>MyAppInstaller_mcr</param.package.mcr.name>
+    <param.no.mcr.name>MyAppInstaller_app</param.no.mcr.name>
+    <param.windows.command.prompt>false</param.windows.command.prompt>
+    <param.create.log>false</param.create.log>
+    <param.log.file />
+    <param.native.matlab>false</param.native.matlab>
+    <param.checkbox>false</param.checkbox>
+    <param.example />
+    <param.help.text>Syntax 
+	  -? 
+	 
+ Input Arguments 
+	 -?  print help on how to use the application 
+	 input arguments</param.help.text>
+    <unset>
+      <param.icon />
+      <param.icons />
+      <param.description />
+      <param.guid />
+      <param.installpath.string />
+      <param.installpath.combo />
+      <param.logo />
+      <param.install.notes />
+      <param.target.install.notes />
+      <param.intermediate />
+      <param.files.only />
+      <param.output />
+      <param.logdir />
+      <param.enable.clean.build />
+      <param.user.defined.mcr.options />
+      <param.target.type />
+      <param.support.packages />
+      <param.web.mcr />
+      <param.package.mcr />
+      <param.no.mcr />
+      <param.web.mcr.name />
+      <param.package.mcr.name />
+      <param.no.mcr.name />
+      <param.create.log />
+      <param.log.file />
+      <param.native.matlab />
+      <param.checkbox />
+      <param.example />
+    </unset>
+    <fileset.main>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\GUI\SMIS_vsn2_1.mlapp</file>
+    </fileset.main>
+    <fileset.resources>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\FAST_TIFF</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\FILTERS</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\FLUOROPHORES</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\GUI</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\GUI\STARTUP_MAT_FILES</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\HELP</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\PATTERNS</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\SCRIPTS</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\SMIS_EXAMPLES</file>
+    </fileset.resources>
+    <fileset.package />
+    <fileset.depfun>
+      <file>${MATLAB_ROOT}\toolbox\matlab\demos\mri.mat</file>
+    </fileset.depfun>
+    <build-deliverables>
+      <file location="${PROJECT_ROOT}\SMIS_2.1\for_testing" name="readme.txt" optional="true">C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\STANDALONE\SMIS_2.1\for_testing\readme.txt</file>
+      <file location="${PROJECT_ROOT}\SMIS_2.1\for_testing" name="SMIS.exe" optional="false">C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\STANDALONE\SMIS_2.1\for_testing\SMIS.exe</file>
+      <file location="${PROJECT_ROOT}\SMIS_2.1\for_testing" name="splash.png" optional="false">C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\STANDALONE\SMIS_2.1\for_testing\splash.png</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2022a</root>
+      <toolboxes />
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.0</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

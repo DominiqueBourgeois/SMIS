@@ -1,0 +1,17 @@
+SMIS vsn2.0 
+
+*********************************************
+Copyright: Dominique Bourgeois, July 21, 2022
+*********************************************
+
+Notes: 
+
+==> This standalone version has only been tested on Windows 10.
+
+==> Upon installation, example simulations are directly accessed by clicking on: "load simulation parameters"
+
+==> Simulations described in the SMIS paper are also directly accessible in the SMIS_EXAMPLES\PAPER folder
+
+==> The basic flow to design a simulation is described by clicking on the "SMIS quick help" button
+
+==> Every SMIS command has an interactive help that automatically pops up by positioning the mouse over the command 
