@@ -23,7 +23,7 @@ This program is free software: you can redistribute it and/or modify it under th
 ## ======================================================= 
 
 # Reference
-Bourgeois, D.; Single Molecule Imaging Simulations with Advanced Fluorophore Photophysics. https://www.biorxiv.org/content/10.1101/2022.06.14.496133v1
+Bourgeois, D.; Single Molecule Imaging Simulations with Advanced Fluorophore Photophysics. https://www.biorxiv.org/content/10.1101/2022.06.14.496133v2
 
 # Installation
 The software can be used either as a standalone application for Windows, MacOS or Linux, or as a MATLAB app. 
@@ -80,21 +80,38 @@ To start learning about SMIS, it is advisable to load simulation examples by cli
 
 ### Main steps to design a simulation : 
 1/ If there is a similar simulation available, load it with « Load simulation parameters ».
+
 2/ Enter the name of your simulation in the « SMIS Simulation Title ».
+
 3/ Choose whether this is a 2D or 3D simulation with « 3D Off-On ».
+
 4/ Set the number of different fluorophores (e.g. for multicolor experiments) you want to use in « Number of fluorophores ».
+
 5/ Load the virtual samples for each defined fluorophore via the « Load virtual sample » menu. You can create virtual samples with the menu “Create virtual samples”.
+
 6/ Set up labeling and photophysics for each fluorophore with the « Setup Fluorophore » menu. In this menu, you can load existing fluorophores, or create your own fluorophore by entering “Define new fluorophore”.
+
 7/ Decide whether this is « sptPALM », « qPALM » or « FRET » experiment. The fluorophores and virtual samples must have been chosen accordingly.
+
 8/ Defined the number of lasers to be used and set up each laser with the « Setup Laser » menu.
+
 9/ Define the final frame size of the detector (and output stack) by setting the « Binning factor »
+
 10/ Define the « Number of frames », « Raster size », « Frametime » and « Time between frame time ».
+
 11/ Define eventual « Sample drift ».
+
 12/ Decide whether this is a single or two-channel experiment with the « Number of acquisition channels » toggle.
+
 13/ Set up the microscope « Objective and PSF » parameters.
+
 14/ Set up the « Emission Filters », and eventually the parameters of the « EMCCD camera » (such as the EMCCD gain).
+
 15/ Define the « Fluorescence background ».
+
 16/ Choose the « Output Directory » and « Stack File Name ».
+
 17/ Save your simulation with the « Save simulation parameters » button. Saving can be done at any time during the process.
+
 18/ Finally launch the simulation with the « Launch simulation » button (single molecule mode) or « Launch ensemble simulation » (ensemble mode).
 
