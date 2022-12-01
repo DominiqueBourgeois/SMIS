@@ -28,6 +28,8 @@ Bourgeois, D.; Single Molecule Imaging Simulations with Advanced Fluorophore Pho
 ## Reported bugs (to be fixed in the next SMIS release)
 => In multicolor simulations, if virtual samples are not loaded individually (ie: Load virtual sample -> all), then the binning parameter cannot be changed anymore. To avoid this, display the virtual sample for one of the fluorophore (ie: Show virtual sample->).
 
+=> In the "Create in silico spectrum" tool, in standalone mode, you will not be able to use "include typical spectrum " tool, because the corresponding file is currently missing 
+
 # Installation
 The software can be used either as a standalone application for Windows, MacOS or Linux, or as a MATLAB app. 
 SMIS was developed under Windows. Proper running of SMIS under MacOS or Linux has not been thoroughly checked.
