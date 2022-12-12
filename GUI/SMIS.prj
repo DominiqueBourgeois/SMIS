@@ -1,0 +1,79 @@
+<deployment-project plugin="plugin.apptool" plugin-version="1.0">
+  <configuration build-checksum="1373958459" file="C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\GUI\SMIS.prj" location="C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\GUI" name="SMIS" target="target.mlapps" target-name="Package App">
+    <param.appname>SMIS</param.appname>
+    <param.authnamewatermark>Dominique Bourgeois</param.authnamewatermark>
+    <param.email>dominique.bourgeois@ibs.fr</param.email>
+    <param.company>Institut de Biologie Structurale</param.company>
+    <param.icon />
+    <param.icons />
+    <param.summary>Single Molecule Imaging Simulator</param.summary>
+    <param.description />
+    <param.screenshot>${PROJECT_ROOT}\SMIS_LOGO.png</param.screenshot>
+    <param.version>2.1</param.version>
+    <param.products.name>
+      <item>MATLAB</item>
+      <item>Image Processing Toolbox</item>
+      <item>Parallel Computing Toolbox</item>
+    </param.products.name>
+    <param.products.id>
+      <item>1</item>
+      <item>17</item>
+      <item>80</item>
+    </param.products.id>
+    <param.products.version>
+      <item>9.12</item>
+      <item>11.5</item>
+      <item>7.6</item>
+    </param.products.version>
+    <param.platforms />
+    <param.output>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\APP</param.output>
+    <param.guid>0f950545-9382-4942-bf72-f36fdb333e4d</param.guid>
+    <unset>
+      <param.icon />
+      <param.icons />
+      <param.description />
+      <param.platforms />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}\SMIS_vsn2_1.mlapp</file>
+    </fileset.main>
+    <fileset.depfun>
+      <file>${MATLAB_ROOT}\toolbox\matlab\demos\mri.mat</file>
+    </fileset.depfun>
+    <fileset.resources>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\FAST_TIFF</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\FILTERS</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\FLUOROPHORES</file>
+      <file>${PROJECT_ROOT}</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\HELP</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\IMAGE_LIBRARY</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\PATTERNS</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\SCRIPTS</file>
+      <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\SMIS_EXAMPLES</file>
+    </fileset.resources>
+    <fileset.package />
+    <build-deliverables>
+      <file location="C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1" name="APP" optional="false">C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\APP</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2022a</root>
+      <toolboxes />
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.0</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

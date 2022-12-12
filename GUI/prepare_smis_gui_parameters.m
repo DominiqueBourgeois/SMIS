@@ -82,8 +82,8 @@ smis_gui_parameters.obj_and_psf = struct(...
     'obj_immersion_indice', 1.515, ...  % [Water: 1.33; Oil: 1.515]
     'obj_immersion_sample', 1.33, ... % [Water: 1.33; Oil: 1.515]
     'obj_eff_from_opening_angle',1, ... % 1: Use formula from Fourkas, 2001, Opt.Letters; 0: Enter value manually
-    'obj_mic_transmission', 0.2, ... % If obj_eff_from_opening_angle',1, additional correction for overall microscope transmission efficiency
-    'obj_transmission_eff', 0.04, ...; % Microscope transmission efficiency, used if obj_eff_from_opening_angle=0.
+    'obj_mic_transmission', 0.8, ... % If obj_eff_from_opening_angle',1, additional correction for overall microscope transmission efficiency
+    'obj_transmission_eff', 0.2, ...; % Microscope transmission efficiency, used if obj_eff_from_opening_angle=0.
     'sample_zcenter', 0, ...; % [nm] shift of sample center in Z relative to plane of focus. Set to 0 for symmetrically centered pattern. Set to -1 for plane of focus at top of sample (e.g. for TIRF mode)
     'psf_n_zslices', 32, ...; # of slices (within sample thickness)for 3D psf
     'psf_astigmatism_on', 0, ...; % Set to 1 if astigmatism for 3D SMLM is on
@@ -179,7 +179,7 @@ smis_gui_parameters.Fluorophores.Linkage=struct(... % fluorophore linkage proper
 % Define Photophysics sampling rates
 smis_gui_parameters.Sampling = struct(...
     'sampling_rate',50000, ... % sampling rate for photophysics during frametime and addtime [s-1]
-    'optimize_sampling_rate',0, ...  % [0/1] Set to 1 to use this option
+    'optimize_sampling_rate',1, ...  % [0/1] Set to 1 to use this option
     'min_sampling_points',5, ...  % Default minimum # of sampling points per frame
     'minimum_oversampling',10 ... % If optimize_sampling_rate==1 sampling_rate will be set to 10*max(photophysical transition rates)
     );
