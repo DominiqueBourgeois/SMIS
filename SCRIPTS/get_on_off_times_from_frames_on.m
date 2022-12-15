@@ -20,6 +20,7 @@ if isempty(frames_on)
     on_times=[];
     off_times=[];
     N=[];
+    start_frames=[];
     return
 end
 d=diff(frames_on);
