@@ -26,9 +26,7 @@ This program is free software: you can redistribute it and/or modify it under th
 Bourgeois, D.; Single Molecule Imaging Simulations with Advanced Fluorophore Photophysics. https://www.biorxiv.org/content/10.1101/2022.06.14.496133v2
 
 ## Reported bugs (to be fixed in the next SMIS release)
-=> In multicolor simulations, if virtual samples are not loaded individually (ie: Load virtual sample -> all), then the binning parameter cannot be changed anymore. To avoid this, display the virtual sample for one of the fluorophore (ie: Show virtual sample->).
-
-=> In the "Create in silico spectrum" tool, you will not be able to use "include typical spectrum " tool, because the corresponding file is currently missing 
+No bugs reported for now ...
 
 # Installation
 The software can be used either as a standalone application for Windows, MacOS or Linux, or as a MATLAB app. 
