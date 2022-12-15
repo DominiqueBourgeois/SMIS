@@ -68,7 +68,9 @@ To properly run SMIS with Matlab, you need the Image Processing Toolbox, and pre
 In Matlab, go to the APPS tab, and click on “Install App”. 
 
 => For Windows select the “SMIS_Windows.mlappinstall” located in SMIS/APP 
+
 => For Linux select the “SMIS_Linux.mlappinstall” located in SMIS/APP 
+
 => For Mac OS select the “SMIS.mlappinstall” located in SMIS/APP 
 
 ## SMIS User manual
