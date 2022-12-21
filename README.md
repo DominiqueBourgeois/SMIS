@@ -75,9 +75,9 @@ In Matlab, go to the APPS tab, and click on “Install App”.
 
 ## SMIS User manual
 
-A detailed SMIS user manual is under construction.
+Please look at the user manual for detailed instructions how to use SMIS.
 
-In SMIS, interactive help is available by moving the mouse to the desired field.
+In the SMIS GUI, interactive help is also available by moving the mouse to the desired field.
 
 ### Getting familiar with SMIS: 
 
