@@ -28,19 +28,20 @@ function [sm, det_im] = update_sub_image_pct(x,y,z,sm, det_im, im_par, sm_par, c
 
 % Get the proper indices for donor and acceptor
 sub_x_idx=4;
-theta_idx=7;
-n_phot_ch1_idx=8;
-n_phot_ch2_idx=9;
-n_phot_det_ch1_idx=10;
-n_phot_det_ch2_idx=11;
-tot_phot_det_ch1_idx=12;
-tot_phot_det_ch2_idx=13;
-frames_on_ch1_idx=14;
-frames_on_ch2_idx=15;
-fr_t_on_idx=17;
-lx_idx=18;
-ly_idx=19;
-lz_idx=20;
+theta_idx=8;
+n_phot_ch1_idx=9;
+n_phot_ch2_idx=10;
+n_phot_det_ch1_idx=11;
+n_phot_det_ch2_idx=12;
+tot_phot_det_ch1_idx=13;
+tot_phot_det_ch2_idx=14;
+frames_on_ch1_idx=15;
+frames_on_ch2_idx=16;
+fr_t_on_idx=18;
+lx_idx=19;
+ly_idx=20;
+lz_idx=21;
+
 
 % Set the number of detected photons
 n_phot_det_ch1=0;

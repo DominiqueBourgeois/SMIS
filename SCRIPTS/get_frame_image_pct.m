@@ -43,7 +43,6 @@ bleached_idx=17;
 % bleached_idx=16;
 
 
-
 for k=1:sm_par.n_mol_eff
     if sm{bleached_idx,k}==0 || sm{bleached_idx,k}==im_par.current_frame
         if im_par.add_diffusion==0 || im_par.use_diffuse_psf==0 || isempty(sm{sub_x_idx,k}) % general case
