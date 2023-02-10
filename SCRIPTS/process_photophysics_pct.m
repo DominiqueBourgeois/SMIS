@@ -39,8 +39,9 @@ addtime=im_par.addtime;
 %Extract the needed fields for sm_cell
 sm=sm_cell(sm_par.idx.process_photophysics.indices,:);
 
+% tic
 parfor (k=1:sm_par.n_mol_eff, im_par.parforArg)
-    %for k=1:sm_par.n_mol_eff
+%for k=1:sm_par.n_mol_eff
     if addtime>0 %Process photophysics during addtime
         during_frametime=0;
         sm(:,k)=get_state_evolution_pct(sm(:,k),lasers, sm_par, im_par, w_events, starting_states, ending_states, during_frametime);
@@ -49,6 +50,7 @@ parfor (k=1:sm_par.n_mol_eff, im_par.parforArg)
     during_frametime=1;
     sm(:,k)=get_state_evolution_pct(sm(:,k), lasers, sm_par, im_par, w_events, starting_states, ending_states, during_frametime);
 end
+% toc
 
 %Fill up sm_cell
 sm_cell(sm_par.idx.process_photophysics.indices,:)=sm;

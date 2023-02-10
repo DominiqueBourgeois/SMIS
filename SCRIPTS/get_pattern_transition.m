@@ -1,4 +1,4 @@
-function [S2, p_id] = get_pattern_transition(P,V, D_ras,S,K,C,dt, sm_par, im_par)
+function [S2, p_id] = get_pattern_transition(P,V, D_ras,S,K,C,dt, sm_par, sm_pattern_indices, im_par)
 
 % PURPOSE:
 % Get new diffusion state for a molecule initially in diffusion state S
@@ -13,6 +13,7 @@ function [S2, p_id] = get_pattern_transition(P,V, D_ras,S,K,C,dt, sm_par, im_par
 %   C: confinement sub-pattern ids for diffusion states
 %   dt: time interval [s]
 %	sm_par: the sm parameters
+%   sm_pattern_indices: indices of virtual sample subpatterns
 %	im_par: the imaging parameters
 %
 % OUTPUTS:
@@ -35,11 +36,12 @@ function [S2, p_id] = get_pattern_transition(P,V, D_ras,S,K,C,dt, sm_par, im_par
 %	D.Bourgeois, November 2019: version > simulate_palm_vsn15.3
 %	D.Bourgeois, December 2019: version > simulate_palm_vsn15.3
 %	D.Bourgeois, December 2020: corrected bug for indexing patterns:
-%	sm_par.w_patterns(C_ES+1).w replaced by sm_par.w_patterns(ES(i)).w as
+%	sm_pattern_indices.w_patterns(C_ES+1).w replaced by sm_pattern_indices.w_patterns(ES(i)).w as
 %	C_ES is the subpatern id (ie: 255), not the id of the subpattern (ie
 %	between 1 and 3 if 3 subpatterns)
 %	D.Bourgeois, November 2020: version > simulate_palm_vsn16.3 (introduce
 %	Velocity)
+%	D.Bourgeois, February 2023, introduce sm_pattern_indices, now disconnected from sm_par
 
 if isempty(K); S2=S; p_id=C(S); return; end % No change in state in that case
 
@@ -92,7 +94,7 @@ for i=1:N_trans
                     r=(3/(4*pi)*D_ras*dt).^(1/3);
                 end
                 np_id=sm_par.n_sp_id==sm_par.D_confined(ES(i)); % Pattern id for new diffusion state
-                possible_change_in_S = search_close_subpatterns(P,V*dt,sm_par.w_patterns(np_id).w,r,im_par); % Changed 17/01/21
+                possible_change_in_S = search_close_subpatterns(P,V*dt,sm_pattern_indices.w_patterns(np_id).w,r,im_par); % Changed 17/01/21
             end
             
             % If the change is possible, go for it !

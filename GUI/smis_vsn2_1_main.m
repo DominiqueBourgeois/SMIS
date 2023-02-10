@@ -50,6 +50,7 @@ vsn_no='2.1'; % Version number
 %generator.   Added update_diffuse_track when im_par.use_diffuse_psf=1;
 %SMIS2.0: Parallel computing added !
 %SMIS2.1: Optimization of Parallel computing ! Add linkage error. Add dichroic filters.
+%SMIS2.1: Added sm_pattern_indices for compatibility with parallel computing in 3D. Improve handling of textured background images
 
 if ~isdeployed % Take this line off for standalon version
     %Path where the simulation software is loacted
@@ -1054,13 +1055,31 @@ disp('Done ...')
 
 a_h_all_sm(a_h_all_sm > 0)=100; % Reset a_h_all
 
-%Account for limited maturation
+%% Prepare background textured image if needed
+if im_par.bg.add_textured_bg==1
+    % read the pattern file
+    tx_pattern_file=fullfile(im_par.bg.textured_bg_pattern_dir,im_par.bg.textured_bg_pattern_file);
+    tx_pattern=imread(tx_pattern_file);
+    [tx_pattern,n,m,~]=check_im_size(tx_pattern, im_par.binning);
+    tx_pattern = double(imresize(tx_pattern,1/im_par.binning));
+    if n~=im_par.n || m~=im_par.m
+        SMISMessage='Size of textured background image should be the same size as main image size in X and Y dimensions !';
+        disp(SMISMessage);
+        warndlg(SMISMessage,'Warning')
+        smis_ok=0; return
+    end
+    tx_pattern(tx_pattern>1)=1; % this pattern must be equal to one wherever there is signala
+else
+    tx_pattern=[];
+end
+
+%% Account for limited maturation
 [sms,sm_par,a_h_all_sm]=check_maturation_level(sms, sm_par, im_par, a_h_all_sm);
 if fluorophore_pairing_on==1 && n_fluorophores>1
     sms=check_matching(sms, fluorophore_pairs);
 end
 
-% Define initial diffusion coefficients for the molecules
+%% Define initial diffusion coefficients for the molecules
 if add_diffusion==1
     %Prepare diffusion exchange rate matrix
     %sm_par=prepare_diffusion(n_fluorophores, sm_par); % Not used anymore with the GUI
@@ -1071,7 +1090,7 @@ if add_diffusion==1
 end
 
 
-% Orient single molecules if anisotropy set to 1
+%% Orient single molecules if anisotropy set to 1
 sms=prepare_dipole_orientation(sms,n_fluorophores,sm_par);
 
 
@@ -1161,6 +1180,13 @@ im_par=init_EMCCD_frames(im_par,outfiledir,outfilename);
 %% Check sampling rate
 for i=1:n_fluorophores
     sm_par(i)=check_sampling_rate(sms(i), lasers, sm_par(i), im_par);
+end
+
+%% Disconnect .w_pattern field from sm_par for broadcast size in pct mode
+sm_pattern_indices(1:n_fluorophores)=struct();
+for i=1:n_fluorophores
+    sm_pattern_indices(i).w_patterns=sm_par(i).w_patterns;
+    sm_par(i).w_patterns=[];
 end
 
 %% RUN SIMULATION
@@ -1298,7 +1324,7 @@ for frame=1:n_images
 
     %% Eventually apply diffusion
     if add_diffusion==1
-        [sms, sm_par] = process_diffusion_pct(sms, sm_par, im_par, display_par);
+        [sms, sm_par] = process_diffusion_pct(sms, sm_par, sm_pattern_indices, im_par, display_par);
     end
 
 
@@ -1323,14 +1349,14 @@ for frame=1:n_images
 
     %% Get the images
     for i=1:n_fluorophores
-        [sms(i).sm_cell,det_im,smis_ok]=get_frame_image_pct(sms(i).sm_cell, sm_par(i), det_im, im_par);
+        [sms(i).sm_cell,det_im,smis_ok]=get_frame_image_pct(sms(i).sm_cell, sm_pattern_indices(i), sm_par(i), det_im, im_par);
         if smis_ok==0
             return
         end
     end
 
     %% Setup background noise
-    [det_im, lasers]=get_background_pct(det_im, im_par, lasers);
+    [det_im, lasers]=get_background_pct(det_im, im_par, lasers, tx_pattern);
 
     %% Setup noise level and gain
     det_im=get_camera_signal_pct(det_im, im_par);

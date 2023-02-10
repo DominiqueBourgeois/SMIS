@@ -1,4 +1,4 @@
-function [sm, det_im] = update_sub_image_pct(x,y,z,sm, det_im, im_par, sm_par, channel)
+function [sm, det_im] = update_sub_image_pct(x,y,z,sm, det_im, im_par, sm_pattern_indices, sm_par, channel)
 %
 % NAME:
 %	update_sub_image
@@ -12,6 +12,7 @@ function [sm, det_im] = update_sub_image_pct(x,y,z,sm, det_im, im_par, sm_par, c
 %   sm: the single molecule (with coordinates on high-resolution image) in raster units
 %	det_im: the detector images 
 %	im_par: the imaging parameters
+%   sm_pattern_indices: indices of virtual sample subpatterns
 %	sm_par: the sm parameters
 %   channel: set to channel number (1 for channel 1, etc)
 %
@@ -24,7 +25,7 @@ function [sm, det_im] = update_sub_image_pct(x,y,z,sm, det_im, im_par, sm_par, c
 %	D.Bourgeois, May 2021. Introduce sm.n_phot_det_ch1 and sm.n_phot_det_ch2;
 %	D.Bourgeois, July 2021. Keep track of sm.n_phot_det_ch1 and sm.n_phot_det_ch2 over whole data set;
 %	D.Bourgeois, September 2022, use cell arrays instead of structures. Introduce det_im. Introduce det_im. Introduce linkage error
-
+%	D.Bourgeois, February 2023, introduce sm_pattern_indices, now disconnected from sm_par
 
 % Get the proper indices for donor and acceptor
 sub_x_idx=4;
@@ -76,7 +77,7 @@ if channel==1 && n_phot_det_ch1>0
             % Get the linkage error
             if sm_par.linkage_error==1
                 [x(k),y(k),z(k),sm([lx_idx,ly_idx,lz_idx,le_set_idx])] = ...
-                    get_linkage_error_pct(x(k),y(k),z(k),sm([lx_idx,ly_idx,lz_idx,le_set_idx]), im_par, sm_par);                        
+                    get_linkage_error_pct(x(k),y(k),z(k),sm([lx_idx,ly_idx,lz_idx,le_set_idx]), im_par, sm_pattern_indices, sm_par);                        
             end
 
             if im_par.simul_3D==0
@@ -99,7 +100,7 @@ elseif channel==2 && n_phot_det_ch2>0 %same for channel 2
             % Get the linkage error
             if sm_par.linkage_error==1
                 [x(k),y(k),z(k),sm([lx_idx,ly_idx,lz_idx,le_set_idx])] = ...
-                    get_linkage_error_pct(x(k),y(k),z(k),sm([lx_idx,ly_idx,lz_idx,le_set_idx]), im_par, sm_par);                        
+                    get_linkage_error_pct(x(k),y(k),z(k),sm([lx_idx,ly_idx,lz_idx,le_set_idx]), im_par, sm_pattern_indices, sm_par);                        
             end
 
             if im_par.simul_3D==0

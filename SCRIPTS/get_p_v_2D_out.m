@@ -13,7 +13,7 @@ function  [P_out, V_out]=get_p_v_2D_out(P_in, V_in, S, v, dt, raster, binning, m
 %	raster: = im_par.raster
 %	binning: = im_par.binning
 %	margin_factor: = sm_par.margin_factor
-%	w: = sm_par.w_patterns(c_ds).w
+%	w: = sm_pattern_indices.w_patterns(c_ds).w
 %   sz: image size
 %
 % OUTPUTS:

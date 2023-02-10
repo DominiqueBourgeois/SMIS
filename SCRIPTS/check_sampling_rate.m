@@ -2,7 +2,7 @@ function sm_par = check_sampling_rate(sms, lasers, sm_par, im_par)
 
 %
 % PURPOSE:
-%   Main script to process photophysical state from single molecules
+%   Check sampling rate of sm
 %
 % INPUTS:
 %   sms: the single molecules (with coordinates on high-resolution image) in raster units

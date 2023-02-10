@@ -1,4 +1,4 @@
-function  sms = move_diffusing_sm_3D_pct(n_fluorophores, sms, sm_par, im_par, display_par)
+function  sms = move_diffusing_sm_3D_pct(n_fluorophores, sms, sm_par, sm_pattern_indices, im_par, display_par)
 
 % PURPOSE:
 %	Move the molecules according to their diffusion regime in 3D
@@ -7,7 +7,9 @@ function  sms = move_diffusing_sm_3D_pct(n_fluorophores, sms, sm_par, im_par, di
 %   n_fluorophores: the # of dyes
 %   sms: the single molecules
 %	sm_par: the sm parameters
+%   sm_pattern_indices: indices of virtual sample subpatterns
 %	im_par: the imaging parameters
+%   display_par: the displaying parameters
 %
 % OUTPUTS:
 %   sms: the single molecules updated for: diffusion states, current position
@@ -15,6 +17,7 @@ function  sms = move_diffusing_sm_3D_pct(n_fluorophores, sms, sm_par, im_par, di
 % MODIFICATION HISTORY:
 %	D.Bourgeois, June 2019: version > simulate_palm_vsn15
 %	D.Bourgeois, September 2022, optimized for parallel computing
+%	D.Bourgeois, February 2023, introduce sm_pattern_indices, now disconnected from sm_par
 
 %Strategy:
 %=> Look which molecules are in state 1, 2, 3 .... at start
@@ -79,7 +82,7 @@ for i=1:n_fluorophores
             w_D_act=intersect(w_act,w_D);
             
             if ~isempty(w_D_act)
-                sms(i).sm_cell(:,w_D_act) = update_diffusing_sm_3D_pct(sms(i).sm_cell(:,w_D_act), im_par, sm_par(i), j);
+                sms(i).sm_cell(:,w_D_act) = update_diffusing_sm_3D_pct(sms(i).sm_cell(:,w_D_act), im_par, sm_pattern_indices(i), sm_par(i), j);
             end
         end
                       
@@ -130,7 +133,7 @@ for i=1:n_fluorophores
                     w_D = find(D_state_ini==j);
                     w_D_act=intersect(w_act_unmatched,w_D);                
                     if ~isempty(w_D_act)
-                        sms(td_id).sm_cell(:,w_D_act) = update_diffusing_sm_3D_pct(sms(td_id).sm_cell(:,w_D_act), im_par, sm_par(td_id), j);
+                        sms(td_id).sm_cell(:,w_D_act) = update_diffusing_sm_3D_pct(sms(td_id).sm_cell(:,w_D_act), im_par, sm_pattern_indices(td_id), sm_par(td_id), j);
                     end
                 end
             end

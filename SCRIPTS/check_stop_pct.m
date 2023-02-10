@@ -36,7 +36,7 @@ if im_par.add_drift==1 || im_par.add_diffusion==1
     y_idx=2;
     z_idx=3;
     for k=1:n_fluorophores
-        [x,y,~]=get_coordinates_on_detector_pct([sms(k).sm_cell{x_idx,:}],[sms(k).sm_cell{y_idx,:}],[sms(k).sm_cell{z_idx,:}], im_par);
+        [x,y,~]=get_coordinates_on_detector_pct([sms(k).sm_cell{x_idx,:}],[sms(k).sm_cell{y_idx,:}],[sms(k).sm_cell{z_idx,:}], im_par.binning);
         n_in_fov=check_in_fov(x,y,1.2,im_par);
         if n_in_fov==0
             stop_id2=1+stop_id2;

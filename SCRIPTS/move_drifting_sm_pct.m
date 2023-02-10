@@ -43,9 +43,9 @@ end
 
 
 if im_par.simul_3D==0 % 3D mode
-    [x,y,~]=get_coordinates_on_detector_pct([sm{x_idx,:}],[sm{y_idx,:}],[], im_par);
+    [x,y,~]=get_coordinates_on_detector_pct([sm{x_idx,:}],[sm{y_idx,:}],[], im_par.binning);
 else
-    [x,y,z]=get_coordinates_on_detector_pct([sm{x_idx,:}],[sm{y_idx,:}],[sm{z_idx,:}], im_par);
+    [x,y,z]=get_coordinates_on_detector_pct([sm{x_idx,:}],[sm{y_idx,:}],[sm{z_idx,:}], im_par.binning);
 end
 x2=x + dx;
 y2=y + dy;

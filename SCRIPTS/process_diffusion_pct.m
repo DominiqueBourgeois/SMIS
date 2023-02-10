@@ -1,4 +1,4 @@
-function [sms, sm_par] = process_diffusion_pct(sms, sm_par, im_par, display_par)
+function [sms, sm_par] = process_diffusion_pct(sms, sm_par, sm_pattern_indices, im_par, display_par)
 
 %
 % PURPOSE:
@@ -7,6 +7,7 @@ function [sms, sm_par] = process_diffusion_pct(sms, sm_par, im_par, display_par)
 % INPUTS:
 %   sms: the single molecules 
 %	sm_par: the sm parameters
+%   sm_pattern_indices: indices of virtual sample subpatterns
 %	im_par: the imaging parameters
 %   display_par: the smis display parameters
 %
@@ -16,6 +17,7 @@ function [sms, sm_par] = process_diffusion_pct(sms, sm_par, im_par, display_par)
 %
 % MODIFICATION HISTORY:
 %	D.Bourgeois, September 2022, optimized for parallel computing
+%	D.Bourgeois, February 2023, introduce sm_pattern_indices, now disconnected from sm_par
 
 % Open figure if necessary
 if display_par.show_diff_image==1
@@ -41,9 +43,9 @@ end
 
 % Process the diffusing molecules
 if im_par.simul_3D==0 % Set to 1 if diffusion is confined within pattern
-    sms = move_diffusing_sm_2D_pct(n_fluorophores, sms, sm_par, im_par, display_par);
+    sms = move_diffusing_sm_2D_pct(n_fluorophores, sms, sm_par, sm_pattern_indices, im_par, display_par);
 else
-    sms = move_diffusing_sm_3D_pct(n_fluorophores, sms, sm_par, im_par, display_par);
+    sms = move_diffusing_sm_3D_pct(n_fluorophores, sms, sm_par, sm_pattern_indices, im_par, display_par);
 end
 
 

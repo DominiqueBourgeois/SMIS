@@ -20,11 +20,18 @@ function sm=get_emission_spectra_pct(sm, sm_par, im_par)
 %generate the emission spectrum for the SM
 
 %Here are the indices in sm cell array
-n_fields=7;
-field_idx=num2cell(1:n_fields);
-[n_em_idx, n_phot_ch1_idx, n_phot_ch2_idx, tot_n_phot_ch1_idx, ...
-    tot_n_phot_ch2_idx, bleached_idx, em_spectrum_idx]=field_idx{:};
+% n_fields=7;
+% field_idx=num2cell(1:n_fields);
+% [n_em_idx, n_phot_ch1_idx, n_phot_ch2_idx, tot_n_phot_ch1_idx, ...
+%     tot_n_phot_ch2_idx, bleached_idx, em_spectrum_idx]=field_idx{:};
 
+n_em_idx=1;
+n_phot_ch1_idx=2;
+n_phot_ch2_idx=3;
+tot_n_phot_ch1_idx=4;
+tot_n_phot_ch2_idx=5;
+bleached_idx=6;
+em_spectrum_idx=7;
 
 %if the molecule was bleached before: nothing to do
 if sm{bleached_idx}~=0 && sm{bleached_idx}<im_par.current_frame

@@ -1,4 +1,4 @@
-function [p_h_out, v_h_out, p_h_out_np]=update_directed_motion_3D(p_h, v_h, dt, c_ds, n_ds, sm_par,im_par)
+function [p_h_out, v_h_out, p_h_out_np]=update_directed_motion_3D(p_h, v_h, dt, c_ds, n_ds, sm_par, sm_pattern_indices, im_par)
 
 % PURPOSE:
 % Update_directed_motion in 3D for a single mol with initial speed V
@@ -19,8 +19,9 @@ function [p_h_out, v_h_out, p_h_out_np]=update_directed_motion_3D(p_h, v_h, dt, 
 %	dt: the evolution time in [seconds]
 %   c_ds: current sub_pattern id (or diffusion state) of the molecule
 %   n_ds: potential new sub_pattern id (or diffusion state) of the molecule
-%	im_par: the imaging parameters
 %	sm_par: the sm parameters
+%   sm_pattern_indices: indices of virtual sample subpatterns
+%	im_par: the imaging parameters
 %
 % OUTPUTS:
 %	p_h_out: [pixels] the updated xyz-coordinate on high-resolution image
@@ -30,10 +31,11 @@ function [p_h_out, v_h_out, p_h_out_np]=update_directed_motion_3D(p_h, v_h, dt, 
 % MODIFICATION HISTORY:
 %	D.Bourgeois, November 2020: version > simulate_palm_vsn16.3
 %	D.Bourgeois, January 2021:  Update for change of diffusion state within single pattern
+%	D.Bourgeois, February 2023, introduce sm_pattern_indices, now disconnected from sm_par
 
 cp_id=sm_par.n_sp_id==sm_par.D_confined(c_ds); % Pattern id for current diffusion state
 np_id=sm_par.n_sp_id==sm_par.D_confined(n_ds); % Pattern id for new diffusion state
-c_w_pattern=sm_par.w_patterns(cp_id).w;
+c_w_pattern=sm_pattern_indices.w_patterns(cp_id).w;
 
 show = 0; % Set to 1 for debug; 2 for final view
 
@@ -183,7 +185,7 @@ end
 %Finally check if the current velocity vector crosses a possible new pattern if a transition is allowed.
 % if n_ds~=c_ds
 if n_ds~=c_ds  && any(cp_id~=np_id) % Corrected 17/01/21
-    n_w_pattern=sm_par.w_patterns(np_id).w;
+    n_w_pattern=sm_pattern_indices.w_patterns(np_id).w;
     % In that case get the intersection of the current velocity vector with the new pattern
     n_pos=round(norm(dt*v_h));
     on_new_pattern=false;

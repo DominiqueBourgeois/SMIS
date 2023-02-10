@@ -51,9 +51,6 @@ for k=1:n_lasers
     imwrite_dom(uint16(lasers(k).beam_profile*65535/max(max(lasers(k).beam_profile))),simulation_files.(fields{k2}),'tif');
 end
 disp('Saving single molecule data ...');
-for i=1:size(sm_par,2)
-    sm_par(i).w_patterns=[]; % Do not save this to save time & space
-end
 im_par.TiffInfo=[]; % We don't want this in the saved data (generate a warning message upon loading)
 save(simulation_files.data_out,'im_par','sm_par','sms','lasers'); %Save data
 disp('Good, your SMIS Data are saved !');

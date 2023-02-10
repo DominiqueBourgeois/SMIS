@@ -1,4 +1,4 @@
-function  sm = move_one_diffusing_sm_2D_pct(sm, sm_par, im_par, S_DS)
+function  sm = move_one_diffusing_sm_2D_pct(sm, sm_par, sm_pattern_indices, im_par, S_DS)
 
 % PURPOSE:
 %	Update 2D position and diffusion state of a single sm that are is
@@ -7,6 +7,7 @@ function  sm = move_one_diffusing_sm_2D_pct(sm, sm_par, im_par, S_DS)
 % INPUTS:
 %   sm: the single molecule
 %	sm_par: the sm parameters
+%   sm_pattern_indices: indices of virtual sample subpatterns
 %	im_par: the imaging parameters
 %   S_DS: starting diffusion state
 %
@@ -15,12 +16,7 @@ function  sm = move_one_diffusing_sm_2D_pct(sm, sm_par, im_par, S_DS)
 %
 % MODIFICATION HISTORY:
 %	D.Bourgeois, September 2022, optimized for parallel computing
-
-
-%     w_idx = find(matches(sm_par(i).sm_fn,{'x','y','x_track','y_track',...
-%         'sub_x','sub_y','v_x','v_y','c_sp', 'n_sp',...
-%         'id','bleached','activated','diff_state','n_diff_state',...
-%         'diff_state_trace','matched'})==1);
+%	D.Bourgeois, February 2023, introduce sm_pattern_indices, now disconnected from sm_par
 
 %Extract the useful indices
 x_idx=1;
@@ -87,10 +83,10 @@ if use_diffuse_psf==1
         if max_dt>=dt_addtime % In that case no need to subdivide
             % Look for a potential change in diffusion state
             [sm{n_diff_state_idx}, sm{n_sp_idx}]=get_pattern_transition([x_h,y_h], ...
-                V_ras(S_DS), D_ras(S_DS), S_DS,K,C,dt_addtime,sm_par,im_par); % Get new diffusion coefficient
+                V_ras(S_DS), D_ras(S_DS), S_DS,K,C,dt_addtime,sm_par,sm_pattern_indices,im_par); % Get new diffusion coefficient
 
             % Update position and check if a potential change in diffusion state is realized or not
-            [x_h_d_tmp, y_h_d_tmp,sm]=get_new_XY_pct(x_h, y_h, sm, D_ras, dt_addtime, S, sm_par, im_par);
+            [x_h_d_tmp, y_h_d_tmp,sm]=get_new_XY_pct(x_h, y_h, sm, D_ras, dt_addtime, S, sm_par, sm_pattern_indices, im_par);
 
             if record_ds_history==1
                 % Diffusion state history during addtime
@@ -112,11 +108,11 @@ if use_diffuse_psf==1
             for k=1:n_substeps
                 % Look for a potential change in diffusion state
                 [sm{n_diff_state_idx}, sm{n_sp_idx}]=get_pattern_transition([sub_xy(k,1),sub_xy(k,2)], ...
-                    V_ras(c_diff_state), D_ras(c_diff_state), c_diff_state,K,C,dt_subaddtime,sm_par,im_par); % Get new diffusion coefficient
+                    V_ras(c_diff_state), D_ras(c_diff_state), c_diff_state,K,C,dt_subaddtime,sm_par,sm_pattern_indices,im_par); % Get new diffusion coefficient
 
                 % Update position and check if a potential change in diffusion state is realized or not
                 [sub_xy(k+1,1),sub_xy(k+1,2),sm]=get_new_XY_pct(sub_xy(k,1),sub_xy(k,2), sm, ...
-                    D_ras, dt_subaddtime, S, sm_par, im_par);
+                    D_ras, dt_subaddtime, S, sm_par, sm_pattern_indices, im_par);
 
                 % Reassign current diffusion state
                 c_diff_state=sm{diff_state_idx};
@@ -148,11 +144,11 @@ if use_diffuse_psf==1
     % First do a quick evaluation to estimate the diffused distance
     % Look for a potential change in diffusion state
     [sm{n_diff_state_idx}, sm{n_sp_idx}]=get_pattern_transition([x_h_d_tmp,y_h_d_tmp], ...
-        V_ras(N_DS), D_ras(N_DS), N_DS,K,C,dt_frametime,sm_par,im_par);
+        V_ras(N_DS), D_ras(N_DS), N_DS,K,C,dt_frametime,sm_par,sm_pattern_indices,im_par);
 
     % Update position and check if a potential change in diffusion state is realized or not
     [x_h_d_tmp2, y_h_d_tmp2,sm_tmp2]=get_new_XY_pct(x_h_d_tmp, y_h_d_tmp, ...
-        sm, D_ras, dt_frametime, S, sm_par, im_par);
+        sm, D_ras, dt_frametime, S, sm_par, sm_pattern_indices, im_par);
 
     diffused_distance=raster*sqrt((x_h_d_tmp2-x_h_d_tmp)^2+(y_h_d_tmp2-y_h_d_tmp)^2); % in [nm]
 
@@ -174,11 +170,11 @@ if use_diffuse_psf==1
         for k=1:n_substeps
             % Look for a potential change in diffusion state
             [sm{n_diff_state_idx}, sm{n_sp_idx}]=get_pattern_transition([sub_xy(k,1),sub_xy(k,2)], ...
-                V_ras(c_diff_state), D_ras(c_diff_state), c_diff_state,K,C,dt_subframetime,sm_par,im_par); % Get new diffusion coefficient
+                V_ras(c_diff_state), D_ras(c_diff_state), c_diff_state,K,C,dt_subframetime,sm_par,sm_pattern_indices,im_par); % Get new diffusion coefficient
 
             % Update position and check if a potential change in diffusion state is realized or not
             [sub_xy(k+1,1),sub_xy(k+1,2),sm]=get_new_XY_pct(sub_xy(k,1),sub_xy(k,2), sm, ...
-                D_ras, dt_subframetime, S, sm_par, im_par);
+                D_ras, dt_subframetime, S, sm_par, sm_pattern_indices, im_par);
 
             % Reassign current diffusion state
             c_diff_state=sm{diff_state_idx};
@@ -214,10 +210,10 @@ if use_diffuse_psf==1
 else 
 
     % Look for a change in diffusion state
-    [sm{n_diff_state_idx}, sm{n_sp_idx}]=get_pattern_transition([x_h,y_h], V_ras(S_DS), D_ras(S_DS), S_DS,K,C,dt,sm_par,im_par); % Get new diffusion coefficient
+    [sm{n_diff_state_idx}, sm{n_sp_idx}]=get_pattern_transition([x_h,y_h], V_ras(S_DS), D_ras(S_DS), S_DS,K,C,dt,sm_par,sm_pattern_indices,im_par); % Get new diffusion coefficient
 
     % Update position and check if a potential change in diffusion state is realized or not
-    [x_h_d, y_h_d,sm]=get_new_XY_pct(x_h, y_h, sm, D_ras, dt, S, sm_par, im_par);
+    [x_h_d, y_h_d,sm]=get_new_XY_pct(x_h, y_h, sm, D_ras, dt, S, sm_par, sm_pattern_indices, im_par);
 
     if record_ds_history==1
         ds_h=[[0,S_DS];[dt_addtime+dt_frametime,sm{diff_state_idx}]]; % Full diffusion state history during addtime + frametime
