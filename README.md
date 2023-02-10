@@ -63,15 +63,11 @@ The SMIS executable is found in: SMIS/STANDALONE/DISTRIBUTE/MACOS
 To execute SMIS, open a terminal, move to the directory where SMIS is installed and type at the prompt: “./run_SMIS.sh <mcr_directory>”, where <mcr_directory> is the location of the Matlab runtime. 
 
 ### Using the SMIS app with Matlab
-To properly run SMIS with Matlab, you need the Image Processing Toolbox, and preferably the Parallel Computing Toolbox (not compulsory).
+To properly run SMIS with Matlab, you need the Image Processing Toolbox, the Statistics and Machine Learning Toolbox and preferably the Parallel Computing Toolbox (not compulsory).
 
 In Matlab, go to the APPS tab, and click on “Install App”. 
 
-=> For Windows select the “SMIS_Windows.mlappinstall” located in SMIS/APP 
-
-=> For Linux select the “SMIS_Linux.mlappinstall” located in SMIS/APP 
-
-=> For Mac OS select the “SMIS.mlappinstall” located in SMIS/APP 
+=> Select the “SMIS.mlappinstall” located in SMIS/APP 
 
 ## SMIS User manual
 
