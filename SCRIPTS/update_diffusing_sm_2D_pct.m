@@ -1,4 +1,4 @@
-function  sm_cell = update_diffusing_sm_2D_pct(sm_cell, im_par, sm_par, S_DS)
+function  sm_cell = update_diffusing_sm_2D_pct(sm_cell, im_par, sm_pattern_indices, sm_par, S_DS)
 
 % PURPOSE:
 %	Update 2D position and diffusion state of diffusing SM that are in
@@ -6,8 +6,9 @@ function  sm_cell = update_diffusing_sm_2D_pct(sm_cell, im_par, sm_par, S_DS)
 %
 % INPUTS:
 %   sm_cell: the single molecules 
-%	sm_par: the sm parameters
 %	im_par: the imaging parameters
+%   sm_pattern_indices: indices of virtual sample subpatterns
+%	sm_par: the sm parameters
 %   S_DS: starting diffusion state
 %
 % OUTPUTS:
@@ -22,6 +23,7 @@ function  sm_cell = update_diffusing_sm_2D_pct(sm_cell, im_par, sm_par, S_DS)
 %	D.Bourgeois, April 2022: option to record the whole diffusion state
 %       history, but not used at this stage.
 %	D.Bourgeois, September 2022, optimized for parallel computing
+%	D.Bourgeois, February 2023, introduce sm_pattern_indices, now disconnected from sm_par
 
 %Extract the needed fields for sm_cell
 sm=sm_cell(sm_par.w_idx,:);
@@ -46,7 +48,7 @@ end
 n_mol=size(sm_cell,2);
 parfor (k=1:n_mol, im_par.parforArg) % Go for all activated molecules
 %for k=1:n_mol
-    sm(:,k)=move_one_diffusing_sm_2D_pct(sm(:,k), sm_par, im_par, S_DS);
+    sm(:,k)=move_one_diffusing_sm_2D_pct(sm(:,k), sm_par, sm_pattern_indices, im_par, S_DS);
 end
 
 %Fill up sm_cell

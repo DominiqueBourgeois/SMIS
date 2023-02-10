@@ -26,7 +26,7 @@ This program is free software: you can redistribute it and/or modify it under th
 Bourgeois, D.; Single Molecule Imaging Simulations with Advanced Fluorophore Photophysics. https://www.biorxiv.org/content/10.1101/2022.06.14.496133v2
 
 ## Reported bugs (to be fixed in the next SMIS release)
-No bugs reported for now ...
+None for now ...
 
 # Installation
 The software can be used either as a standalone application for Windows, MacOS or Linux, or as a MATLAB app. 
@@ -63,21 +63,17 @@ The SMIS executable is found in: SMIS/STANDALONE/DISTRIBUTE/MACOS
 To execute SMIS, open a terminal, move to the directory where SMIS is installed and type at the prompt: “./run_SMIS.sh <mcr_directory>”, where <mcr_directory> is the location of the Matlab runtime. 
 
 ### Using the SMIS app with Matlab
-To properly run SMIS with Matlab, you need the Image Processing Toolbox, and preferably the Parallel Computing Toolbox (not compulsory).
+To properly run SMIS with Matlab, you need the Image Processing Toolbox, the Statistics and Machine Learning Toolbox and preferably the Parallel Computing Toolbox (not compulsory).
 
 In Matlab, go to the APPS tab, and click on “Install App”. 
 
-=> For Windows select the “SMIS_Windows.mlappinstall” located in SMIS/APP 
-
-=> For Linux select the “SMIS_Linux.mlappinstall” located in SMIS/APP 
-
-=> For Mac OS select the “SMIS.mlappinstall” located in SMIS/APP 
+=> Select the “SMIS.mlappinstall” located in SMIS/APP 
 
 ## SMIS User manual
 
-A detailed SMIS user manual is under construction.
+Please look at the user manual for detailed instructions how to use SMIS.
 
-In SMIS, interactive help is available by moving the mouse to the desired field.
+In the SMIS GUI, interactive help is also available by moving the mouse to the desired field.
 
 ### Getting familiar with SMIS: 
 

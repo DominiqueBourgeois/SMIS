@@ -4,7 +4,6 @@ xr=x-(im_par.n/2-0.5);
 yr=y-(im_par.m/2-0.5);
 deform=im_par.two_channel_deform;
 
-
 shift_x=deform(1)*(1+deform(6)/100*randn(1,1));
 shift_y=deform(2)*(1+deform(6)/100*randn(1,1));
 str_x=deform(3)*(1+deform(6)/100*randn(1,1));

@@ -1,4 +1,4 @@
-function [sm, det_im, ok] = update_image_pct(x,y,z,sm, det_im, im_par, sm_par, channel)
+function [sm, det_im, ok] = update_image_pct(x,y,z,sm, det_im, im_par, sm_pattern_indices, sm_par, channel)
 %
 % NAME:
 %	update_image
@@ -10,6 +10,7 @@ function [sm, det_im, ok] = update_image_pct(x,y,z,sm, det_im, im_par, sm_par, c
 %   sm: the single molecule (with coordinates on high-resolution image) in raster units
 %	det_im: the detector images 
 %	im_par: the imaging parameters
+%   sm_pattern_indices: indices of virtual sample subpatterns
 %	sm_par: the sm parameters
 %   channel: set to channel number (1 for channel 1, etc)
 %
@@ -23,7 +24,7 @@ function [sm, det_im, ok] = update_image_pct(x,y,z,sm, det_im, im_par, sm_par, c
 %	D.Bourgeois, May 2021. Introduce sm.n_phot_det_ch1 and sm.n_phot_det_ch2;
 %	D.Bourgeois, July 2021. Keep track of sm.n_phot_det_ch1 and sm.n_phot_det_ch2 over whole data set;
 %	D.Bourgeois, September 2022, use cell arrays instead of structures. Introduce det_im. Introduce linkage error
-
+%	D.Bourgeois, February 2023, introduce sm_pattern_indices, now disconnected from sm_par
 
 ok=1; % In case of error message (necessary for get_linkage_error)
 
@@ -86,7 +87,7 @@ if channel==1 && n_phot_det_ch1>0
     % Get the linkage error
     if sm_par.linkage_error==1
         [x,y,z,sm([c_sp_idx,lx_idx,ly_idx,lz_idx,le_set_idx]),ok] = ...
-            get_linkage_error_pct(x,y,z,sm([c_sp_idx,lx_idx,ly_idx,lz_idx,le_set_idx]), im_par, sm_par);
+            get_linkage_error_pct(x,y,z,sm([c_sp_idx,lx_idx,ly_idx,lz_idx,le_set_idx]), im_par, sm_pattern_indices, sm_par);
     end
 
     %get the number of photons actually reaching the detector
@@ -105,7 +106,7 @@ elseif channel==2 && n_phot_det_ch2>0 %same for channel 2
     % Get the linkage error
     if sm_par.linkage_error==1
         [x,y,z,sm([c_sp_idx,lx_idx,ly_idx,lz_idx,le_set_idx]),ok] = ...
-            get_linkage_error_pct(x,y,z,sm([c_sp_idx,lx_idx,ly_idx,lz_idx,le_set_idx]), im_par, sm_par);
+            get_linkage_error_pct(x,y,z,sm([c_sp_idx,lx_idx,ly_idx,lz_idx,le_set_idx]), im_par, sm_pattern_indices, sm_par);
     end
 
     %get the number of photons actually reaching the detector

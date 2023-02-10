@@ -42,7 +42,7 @@ end
 
 % Get sm coordinates
 if im_par.simul_3D==1
-    [x,y,z]=get_coordinates_on_detector(sp, im_par); % x,y,z in raster
+    [x,y,z]=get_coordinates_on_detector(sp, im_par.binning); % x,y,z in raster
     % do nothing if the molecule is out of the FOV including in Z (for
     % diffusion measurements, care should be taken to choose a sufficiently thick sample 
     if round(x)<=0 || round(x)>im_par.n || round(y)<=0 || round(y)>im_par.m || round(z)<=0 || round(z)>im_par.nz % only calculate if molecule within FOV
@@ -50,7 +50,7 @@ if im_par.simul_3D==1
         return
     end
 else
-    [x,y,~]=get_coordinates_on_detector(sp, im_par); % x,y,z in raster
+    [x,y,~]=get_coordinates_on_detector(sp, im_par.binning); % x,y,z in raster
     % do nothing if the molecule is out of the FOV
     if round(x)<=0 || round(x)>im_par.n || round(y)<=0 || round(y)>im_par.m % only calculate if molecule within FOV
         N=zeros(1,sm_par.n_states); % No photon absorbed

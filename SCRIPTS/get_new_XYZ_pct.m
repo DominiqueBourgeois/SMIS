@@ -1,4 +1,4 @@
-function [x_h_d, y_h_d, z_h_d, sm] = get_new_XYZ_pct(x_h, y_h, z_h, sm, D_ras, dt, S, sm_par, im_par)
+function [x_h_d, y_h_d, z_h_d, sm] = get_new_XYZ_pct(x_h, y_h, z_h, sm, D_ras, dt, S, sm_par, sm_pattern_indices, im_par)
 
 % PURPOSE:
 % Get new position for a molecule initially at x,y diffusing in 2D for time dt with diffusion coeff D
@@ -12,6 +12,7 @@ function [x_h_d, y_h_d, z_h_d, sm] = get_new_XYZ_pct(x_h, y_h, z_h, sm, D_ras, d
 %	dt: the evolution time in [seconds]
 %   S: size of a high-resolution image
 %	sm_par: the sm parameters
+%   sm_pattern_indices: indices of virtual sample subpatterns
 %	im_par: the imaging parameters
 %
 % OUTPUTS:
@@ -29,6 +30,7 @@ function [x_h_d, y_h_d, z_h_d, sm] = get_new_XYZ_pct(x_h, y_h, z_h, sm, D_ras, d
 %	D.Bourgeois, January 2021: Added possibility to change of diffusion state within single pattern
 %	D.Bourgeois, April 2021: Added possibility have state's change independent of diffusion
 %	D.Bourgeois, September 2022, optimized for parallel computing
+%	D.Bourgeois, February 2023, introduce sm_pattern_indices, now disconnected from sm_par
 
 %Extract the useful indices
 % x_idx=1;
@@ -53,7 +55,7 @@ n_diff_state_idx=19;
 % diff_state_trace_idx=20;
 % matched_idx=21;
 
-w=sm_par.w_patterns; %	w: indices of patterns in high resolution image
+w=sm_pattern_indices.w_patterns; %	w: indices of patterns in high resolution image
 
 c_sp=sm{c_sp_idx}; % current subpattern
 c_ds=sm{diff_state_idx}; % current diffusion state
@@ -92,7 +94,7 @@ end
 
 %Handle directed motion if necessary
 if sm_par.V(c_ds)>0
-    [p_h_out,v_h_out,p_h_out_np]=update_directed_motion_3D_pct([x_h,y_h,z_h],[sm{v_x_idx}, sm{v_y_idx}, sm{v_z_idx}], dt, c_ds, n_ds, sm_par,im_par);
+    [p_h_out,v_h_out,p_h_out_np]=update_directed_motion_3D_pct([x_h,y_h,z_h],[sm{v_x_idx}, sm{v_y_idx}, sm{v_z_idx}], dt, c_ds, n_ds, sm_par,sm_pattern_indices, im_par);
     if isempty(p_h_out_np) % Normal case, no change of pattern possible
         x_h=p_h_out(1);
         y_h=p_h_out(2);

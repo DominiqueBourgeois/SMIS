@@ -1,4 +1,4 @@
-function [x2,y2,z2, sm, ok] = get_linkage_error_with_pattern_control(x,y,z,sm, im_par, sm_par)
+function [x2,y2,z2, sm, ok] = get_linkage_error_with_pattern_control(x,y,z,sm, im_par, sm_pattern_indices, sm_par)
 %
 % NAME:
 %	get_linkage_error
@@ -8,6 +8,7 @@ function [x2,y2,z2, sm, ok] = get_linkage_error_with_pattern_control(x,y,z,sm, i
 %   x, y, z: coordinate of the single molecule on detector image [raster units]
 %   sm: the single molecule (with coordinates on high-resolution image) in raster units
 %	im_par: the imaging parameters
+%   sm_pattern_indices: indices of virtual sample subpatterns
 %	sm_par: the sm parameters
 %
 % OUTPUTS:
@@ -21,6 +22,7 @@ function [x2,y2,z2, sm, ok] = get_linkage_error_with_pattern_control(x,y,z,sm, i
 %   on a membrane and fluorophore sticking out in external medium), the
 %   resolution of the virtual sample image should be on the nm range, ie
 %   binning factors of ~100. Coding not finished for 3D case.
+%	D.Bourgeois, February 2023, introduce sm_pattern_indices, now disconnected from sm_par
 
 % Get the proper indices
 c_sp_idx=1;
@@ -75,7 +77,7 @@ else
             l=(sm_par.linkage_length+randn*sm_par.linkage_std)/im_par.raster; % Length of linkage error [raster unit]
             stick_out=0;
             n_trial=1;
-            w=sm_par.w_patterns(sm_par.n_sp_id==sm{c_sp_idx}).w; % Indices on virtual sample of the sm current subpattern
+            w=sm_pattern_indices.w_patterns(sm_par.n_sp_id==sm{c_sp_idx}).w; % Indices on virtual sample of the sm current subpattern
             while stick_out==0 && n_trial<max_trials
                 theta=2*pi*rand; % Pick random angle
                 if im_par.simul_3D==1

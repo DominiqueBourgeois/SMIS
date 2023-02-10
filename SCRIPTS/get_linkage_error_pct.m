@@ -1,4 +1,4 @@
-function [x2,y2,z2,sm,ok] = get_linkage_error_pct(x,y,z,sm, im_par, sm_par)
+function [x2,y2,z2,sm,ok] = get_linkage_error_pct(x,y,z,sm, im_par, sm_pattern_indices, sm_par)
 %
 % NAME:
 %	get_linkage_error
@@ -8,6 +8,7 @@ function [x2,y2,z2,sm,ok] = get_linkage_error_pct(x,y,z,sm, im_par, sm_par)
 %   x, y, z: coordinate of the single molecule on detector image [raster units]
 %   sm: the single molecule (with coordinates on high-resolution image) in raster units
 %	im_par: the imaging parameters
+%   sm_pattern_indices: indices of virtual sample subpatterns
 %	sm_par: the sm parameters
 %
 % OUTPUTS:
@@ -16,6 +17,7 @@ function [x2,y2,z2,sm,ok] = get_linkage_error_pct(x,y,z,sm, im_par, sm_par)
 %
 % MODIFICATION HISTORY:
 %	D.Bourgeois, September 2022
+%	D.Bourgeois, February 2023, introduce sm_pattern_indices, now disconnected from sm_par
 
 % Get the proper indices
 c_sp_idx=1;
@@ -75,7 +77,7 @@ else % Case of linkage error forcing the fluorophore to stick to specific patter
             n_trial=1;
             % Get the target sub pattern
             w_cp_id=find(sm_par.n_sp_id==sm{c_sp_idx});
-            w=sm_par.w_patterns(sm_par.n_sp_id==sm_par.linkage_pattern_sp_id(w_cp_id)).w; % Indices on the target subpattern
+            w=sm_pattern_indices.w_patterns(sm_par.n_sp_id==sm_par.linkage_pattern_sp_id(w_cp_id)).w; % Indices on the target subpattern
             if im_par.simul_3D==1 % 3D Case
                 sz=im_par.binning*[im_par.n, im_par.m, im_par.nz]; % Size of virtual sample image
             else
@@ -136,7 +138,7 @@ else % Case of linkage error forcing the fluorophore to stick to specific patter
             n_trial=1;
             % Get the target sub pattern
             w_cp_id=find(sm_par.n_sp_id==sm{c_sp_idx});
-            w=sm_par.w_patterns(sm_par.n_sp_id==sm_par.linkage_pattern_sp_id(w_cp_id)).w; % Indices on the target subpattern
+            w=sm_pattern_indices.w_patterns(sm_par.n_sp_id==sm_par.linkage_pattern_sp_id(w_cp_id)).w; % Indices on the target subpattern
             if im_par.simul_3D==1 % 3D Case
                 sz=im_par.binning*[im_par.n, im_par.m, im_par.nz]; % Size of virtual sample image
             else
