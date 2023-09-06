@@ -50,7 +50,6 @@ if n_dyes>1
             disp(['Input pattern number: ',num2str(i),' has a different size than pattern number 1']);
             return
         end
-%         n_sp(i)=max(a_h(:))-min(a_h(:))+1;
         n_sp(i)=numel(unique(a_h));
         if numel(size_a_h)==3; a_h_all(i,:,:,:)=a_h; end
         if numel(size_a_h)==2; a_h_all(i,:,:)=a_h; end

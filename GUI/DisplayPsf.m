@@ -15,8 +15,6 @@ function psf_figure_number=DisplayPsf(smis_gui_parameters)
 
 % Extract all relevant parameters
 Fluorophores=smis_gui_parameters.Fluorophores;
-TwoChannel=smis_gui_parameters.TwoChannel;
-obj_na=smis_gui_parameters.obj_and_psf.obj_na;
 psf_figure_number=smis_gui_parameters.psf_figure_number;
 
 simul_3D=smis_gui_parameters.simul_3D;
@@ -49,6 +47,7 @@ if simul_3D==1
     im_par.nz=smis_gui_parameters.image_size.nz;
     im_par.psf_astigmatism_x=smis_gui_parameters.obj_and_psf.psf_astigmatism_x;
     im_par.psf_astigmatism_y=smis_gui_parameters.obj_and_psf.psf_astigmatism_y;
+    im_par.psf_astigmatism_ch1_only=smis_gui_parameters.obj_and_psf.psf_ch1_only;
 end
 
 sm_par(1:n_fluorophores)=struct;

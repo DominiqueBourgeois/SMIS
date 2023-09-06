@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="1373958459" file="C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\GUI\SMIS.prj" location="C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\GUI" name="SMIS" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="247851543" file="C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\GUI\SMIS.prj" location="C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\GUI" name="SMIS" target="target.mlapps" target-name="Package App">
     <param.appname>SMIS</param.appname>
     <param.authnamewatermark>Dominique Bourgeois</param.authnamewatermark>
     <param.email>dominique.bourgeois@ibs.fr</param.email>
@@ -27,7 +27,7 @@
     </param.products.version>
     <param.platforms />
     <param.output>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\APP</param.output>
-    <param.guid>0f950545-9382-4942-bf72-f36fdb333e4d</param.guid>
+    <param.guid>fa5f2c2c-bbaa-4222-9b61-8726d07d485f</param.guid>
     <unset>
       <param.icon />
       <param.icons />
@@ -45,6 +45,7 @@
       <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\FILTERS</file>
       <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\FLUOROPHORES</file>
       <file>${PROJECT_ROOT}</file>
+      <file>${PROJECT_ROOT}\STARTUP_MAT_FILES</file>
       <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\HELP</file>
       <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\IMAGE_LIBRARY</file>
       <file>C:\Users\bourgeoi\Documents\MATLAB\SIMULATION\PALM\SOFTWARE\SMIS_vsn2.1\PATTERNS</file>

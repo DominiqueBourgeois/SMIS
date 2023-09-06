@@ -25,10 +25,6 @@ else
             clc;
             disp(['Loading stack ... ',num2str(100*i/n_frames), '%']);
         end
-        %         if ~mod(i,100)
-        %             clc;
-        %             disp(['Loading stacks ... ',num2str(i)]);
-        %         end
         subimages(:,:,end+1) = t.read();
         if t.lastDirectory()
             break;

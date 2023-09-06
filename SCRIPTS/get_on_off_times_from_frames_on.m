@@ -43,7 +43,8 @@ if ~isempty(w)
     N=numel(off_times);
 else
     off_times=[];
-    on_times=numel(frames_on);
+%     on_times=numel(frames_on);
+    on_times=frames_on(end)-frames_on(1)+1;
     start_frames=frames_on(1);
     N=0;
 end

@@ -23,7 +23,7 @@ This program is free software: you can redistribute it and/or modify it under th
 ## ======================================================= 
 
 # Reference
-Bourgeois, D.; Single Molecule Imaging Simulations with Advanced Fluorophore Photophysics. https://www.biorxiv.org/content/10.1101/2022.06.14.496133v2
+Bourgeois, D.; Single Molecule Imaging Simulations with Advanced Fluorophore Photophysics. https://doi.org/10.1038/s42003-023-04432-x
 
 ## Reported bugs (to be fixed in the next SMIS release)
 None for now ...
