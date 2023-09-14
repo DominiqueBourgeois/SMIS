@@ -43,6 +43,9 @@ function [donor, acceptor]=get_fret_state_evolution_pct(donor, donor_par, accept
 %	this routine and in process_fret_photophysics !)
 %	D.Bourgeois, June 2022, adapted to parallel computing
 %	D.Bourgeois, September 2022, optimized for parallel computing
+%	D.Bourgeois, September 2023, corrected bug line 298 (Update sampling
+%	rates): There was an inversion between {sampling_rate_idx}(1) and {sampling_rate_idx}(end)
+
 
 % Get the proper indices for donor and acceptor
 x_idx=1;
@@ -296,11 +299,11 @@ while start_time<end_time
     
     %Update sampling rates
     if im_par.during_frametime==1
-        donor{sampling_rate_idx}(end)=sampling_rate_D;
-        acceptor{sampling_rate_idx}(end)=sampling_rate_A;
-    else
         donor{sampling_rate_idx}(1)=sampling_rate_D;
         acceptor{sampling_rate_idx}(1)=sampling_rate_A;
+    else
+        donor{sampling_rate_idx}(end)=sampling_rate_D;
+        acceptor{sampling_rate_idx}(end)=sampling_rate_A;
     end
 end
 
