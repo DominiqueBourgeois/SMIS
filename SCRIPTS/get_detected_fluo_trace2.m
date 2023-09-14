@@ -16,9 +16,6 @@ function ft_det=get_detected_fluo_trace2(ft,state, frametime,addtime, min_detect
 % MODIFICATION HISTORY:
 %	D.Bourgeois, September 2020.
 
-
-ft_det=ft;
-
 t_start=ft(1,1); % Start of trace [s]
 t_end=ft(1,end);
 
@@ -27,7 +24,7 @@ tot_frametime=frametime+addtime;
 f_start=1+fix(t_start/tot_frametime); % First frame
 f_end=1+fix(t_end/tot_frametime);
 
-n_frames=f_end-f_start+1;
+% n_frames=f_end-f_start+1;
 % frames_on=zeros(2,n_frames);
 % frames_on(1,:)=f_start:f_end;
 

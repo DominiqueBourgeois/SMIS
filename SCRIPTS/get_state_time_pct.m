@@ -15,6 +15,7 @@ function t=get_state_time_pct(fluo_trace, sampling_rate, state)
 % MODIFICATION HISTORY:
 %	D.Bourgeois, august 2019.
 %	D.Bourgeois, June 2022, adapted to parallel computing
+%	D.Bourgeois, September 2023, use t=1/sampling_rate instead of t=1/sampling_rate(end) and modify input;
 
 if ~isempty(fluo_trace)
     w=find(fluo_trace(2,:)==state);
@@ -28,7 +29,7 @@ if ~isempty(fluo_trace)
             % merge_trace removes the last point of the subtrace in the
             % first subtrace, so it goes state1-state2-state3 and state2 appears
             % only once. Then it lasts for one sample time = 1/sampling_rate
-            t=1/sampling_rate(end);
+            t=1/sampling_rate;
             return
         end
         sw_w=w-circshift(w,[1,1]);

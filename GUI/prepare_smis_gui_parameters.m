@@ -90,7 +90,8 @@ smis_gui_parameters.obj_and_psf = struct(...
     'psf_astigmatism_x_save', [2.50, 1.25], ...; % Backup values for Astigmatism in X-dimension + 4rth order correction
     'psf_astigmatism_y_save', [-2.50, 1.25], ...; % Backup values for Astigmatism in Y-dimension + 4rth order correction
     'psf_astigmatism_x', [0,0], ...; % Astigmatism in X-dimension + 4rth order correction
-    'psf_astigmatism_y', [0,0] ...; % Astigmatism in Y-dimension + 4rth order correction
+    'psf_astigmatism_y', [0,0], ...; % Astigmatism in Y-dimension + 4rth order correction
+    'psf_ch1_only', 0 ...; % Set to 1 if astigmatism to be applied only on channel 1 in two-channel experiments
     );
 
 % Define default lasers

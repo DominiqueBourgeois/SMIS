@@ -24,7 +24,7 @@ function sm_par=get_psf(n_fluorophores, sm_par, im_par, psf_mode, channel, simul
 for i=1:n_fluorophores
     n_states=sm_par(i).spectral_data.n_fluorescent_states;
 
-    for j=1:n_states     
+    for j=1:n_states
         if channel==1
             psf_width=sm_par(i).psf_par_ch1(j).psf_width;
         elseif channel==2
@@ -37,7 +37,7 @@ for i=1:n_fluorophores
             disp('Error: Unavailable channel number !');
             return;
         end
-        
+
         switch psf_mode
             case 'Simple_Gaussian'
                 if simul_3D==0
@@ -59,22 +59,28 @@ for i=1:n_fluorophores
                     c=im_par.nz/2*im_par.raster; % Set focal plane at mid sample height
                     sig=psf_width/2.35/im_par.raster; % in pixels
                     psf(1:nslices)=struct('plane',[],'rbox_x',[],'rbox_y',[]);
-                    ABx=im_par.psf_astigmatism_x;
-                    ABy=im_par.psf_astigmatism_y;
+                    if channel==2 && im_par.psf_astigmatism_ch1_only==1 % Supress astigmatism in this case
+                        ABx=[0,0];
+                        ABy=[0,0];
+                    else % Set astigmatism in this case
+                        ABx=im_par.psf_astigmatism_x;
+                        ABy=im_par.psf_astigmatism_y;
+                    end
+                    
                     slice_step=image_height/nslices;
                     for k=1:nslices
                         z=k*slice_step+zc; % Should go through the entire image height
                         sig_x=sig*sqrt(max([1e-20,1+((z-c)/d)^2+ABx(1)*((z-c)/d)^3+ABx(2)*((z-c)/d)^4])); % in pixels
                         sig_y=sig*sqrt(max([1e-20,1+((z-c)/d)^2+ABy(1)*((z-c)/d)^3+ABy(2)*((z-c)/d)^4])); % in pixels
-                        
+
                         psf_width_x=2.35*sig_x*im_par.raster;
                         psf_width_y=2.35*sig_y*im_par.raster;
-                        
+
                         rbox_x=fix(psf_width_x/im_par.raster)+1;
                         rbox_y=fix(psf_width_y/im_par.raster)+1;
-                        
+
                         [xpix,ypix]=meshgrid(-rbox_x:rbox_x,-rbox_y:rbox_y);
-                        
+
                         psf_plane=exp(-((xpix).*(xpix))/(2*sig_x^2)-((ypix).*(ypix))/(2*sig_y^2));
                         psf(k).plane=psf_plane/sum(sum(psf_plane));
                         psf(k).rbox_x=rbox_x;
@@ -84,19 +90,19 @@ for i=1:n_fluorophores
                 if simul_3D==0
                     if channel==1
                         sm_par(i).psf_par_ch1(j).psf=psf; % Note that .psf currently not used in get_2Dpeak.m
-                        sm_par(i).psf_par_ch1(j).rbox=rbox; 
+                        sm_par(i).psf_par_ch1(j).rbox=rbox;
                     end
                     if channel==2
                         sm_par(i).psf_par_ch2(j).psf=psf; % Note that .psf currently not used in get_2Dpeak.m
-                        sm_par(i).psf_par_ch2(j).rbox=rbox; 
+                        sm_par(i).psf_par_ch2(j).rbox=rbox;
                         sm_par(i).psf_par_ch2(j).psf_width=psf_width; % Update psf_width in case of defocus
                     end
                 else
                     if channel==1
-                        sm_par(i).psf_par_ch1(j).psf=psf; 
+                        sm_par(i).psf_par_ch1(j).psf=psf;
                     end
                     if channel==2
-                        sm_par(i).psf_par_ch2(j).psf=psf; 
+                        sm_par(i).psf_par_ch2(j).psf=psf;
                     end
                 end
 

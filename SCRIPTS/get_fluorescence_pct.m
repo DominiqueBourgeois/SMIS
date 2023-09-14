@@ -16,6 +16,8 @@ function sm=get_fluorescence_pct(sm, sm_par, im_par)
 % MODIFICATION HISTORY:
 %	D.Bourgeois, August 2019.
 %	D.Bourgeois, September 2022. Adapted for pct toolbox
+%	D.Bourgeois, September 2023. Corrected bug line 64: sm{sampling_rate_idx}(1) 
+% instead of sm{sampling_rate_idx}(end) which was reffering to addtime sampling rate 
 
 %Here are the indices in sm cell array
 sub_x_idx = 1;
@@ -53,13 +55,13 @@ for i=1:sm_par.n_fluorescent_states
     if sm_par.fluorescent_states(i)>=sm_par.initial_fluo_state % Only treat accessible fluorescent states      
         % Get the time fluorescence is on
         if im_par.add_diffusion==0 || im_par.use_diffuse_psf==0 || isempty(sm{sub_x_idx}) % Normal case           
-            sm{t_on_idx}(i)=get_state_time_pct(sm{fluo_trace_idx},sm{sampling_rate_idx},sm_par.fluorescent_states(i));
+            sm{t_on_idx}(i)=get_state_time_pct(sm{fluo_trace_idx},sm{sampling_rate_idx}(1),sm_par.fluorescent_states(i));
         else % Case for a diffuse PSF in case of diffusion
             n_subtime=numel(sm{sub_x_idx});
             [sm{t_on_idx}(i),sm{fr_t_on_idx}(i,1:n_subtime)] =get_state_subtime(sm{fluo_trace_idx},sm_par.fluorescent_states(i),n_subtime);
         end
         % Get # of absorbed photons during that time
-        n_abs=sm{t_on_idx}(i)*sm{Ns_idx}(end,sm_par.fluorescent_states(i))*sm{sampling_rate_idx}(end);
+        n_abs=sm{t_on_idx}(i)*sm{Ns_idx}(end,sm_par.fluorescent_states(i))*sm{sampling_rate_idx}(1);
         sm{n_abs_idx}(sm_par.fluorescent_states(i))=n_abs;
         
         % Get # of emitted photons during that time; use poissonian statistics
