@@ -30,6 +30,7 @@ function [tracks, subtracks, off_times]=extract_SMIS_GT_tracks(all_sm, par)
 %	D.Bourgeois, October 2020. Compatibility with PALM simulation software vsn16.2
 %	D.Bourgeois, January 2022. Compatibility with SMIS 1.3, include segments for different diffusion coefficients
 %	D.Bourgeois, March 2022. Remove segments extraction (done instead in extract_SMIS_segments.m) and option to extract subtracks
+%	D.Bourgeois, October 2023. %Treat the eventual case where x_track not recorded in a frame_on event (ie photons detected before photoconversion)
 
 im_par=par.im_par;
 % plot_tracks=par.plot_tracks;
@@ -145,6 +146,16 @@ for k=1:total_n_mol % Go over total number of molecules
             end
             track_f=sm.x_track(:,2); % the tracks frames
             [~, ix]=intersect(track_f,frames_on);
+
+            %Treat the eventual case where x_track not recorded in a
+            %frame_on event (ie photons detected before photoconversion)
+            if numel(ix)~=numel(frames_on)
+                % Frames unique to frames_on
+                [missed_frames,missed_frames_ix]=setdiff(frames_on,track_f);
+                disp(['Molecule: ',num2str(k),' fluoresced at frames: ',num2str(missed_frames),' before track started to be recorded !']);
+                % Let's ignore those frames
+                frames_on(missed_frames_ix)=[];
+            end
             
             %Get coordinates on detector (x and y are in high-res image from
             %simulations
