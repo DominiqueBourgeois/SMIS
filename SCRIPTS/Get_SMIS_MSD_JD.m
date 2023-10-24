@@ -45,7 +45,7 @@ if n_tracks >0
     disp('Extracting MSDs ...')
     MyWaitbar = waitbar(0,'Calculating MSDs ...');
     
-    for k=1:n_tracks
+    for k=1:n_tracks 
         
         if k/100==fix(k/100)
             waitbar(k/n_tracks,MyWaitbar)
