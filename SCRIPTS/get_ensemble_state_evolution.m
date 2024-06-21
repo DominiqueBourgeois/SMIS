@@ -20,7 +20,9 @@ function [sp, sm_par]=get_ensemble_state_evolution(sp, lasers, sm_par, im_par)
 %
 % MODIFICATION HISTORY:
 %	D.Bourgeois, September 2021.
-
+%	D.Bourgeois, February 2024, Introduce modifications for states in rapid
+%	exchange (not all fluorescent states need anymore to be either in rapid
+%	exchange or not)
 
 % plot_traces=0; % Set to 1 if every trace to be displayed
 % plot_fluo_trace=0; % Set to 1 to see fluorescent state appears
@@ -135,9 +137,11 @@ for k=1:n
     % Equilibrate states in fast equilibrium
     if sm_par.pH_sensitivity==1
        for i=1:sm_par.n_fluorescent_states
-           tmp_C=S(sm_par.fluorescent_states(i))+S(sm_par.associated_dark_states(i));
-           S(sm_par.fluorescent_states(i))=sm_par.fluorescent_fraction(i)*tmp_C;
-           S(sm_par.associated_dark_states(i))=(1-sm_par.fluorescent_fraction(i))*tmp_C;
+           if ~isnan(sm_par.associated_dark_states(i))
+               tmp_C=S(sm_par.fluorescent_states(i))+S(sm_par.associated_dark_states(i));
+               S(sm_par.fluorescent_states(i))=sm_par.fluorescent_fraction(i)*tmp_C;
+               S(sm_par.associated_dark_states(i))=(1-sm_par.fluorescent_fraction(i))*tmp_C;
+           end
        end
     end    
     
@@ -153,9 +157,11 @@ if im_par.during_frametime==1
     %Eventually reassign states in rapid equilibrium
     if sm_par.pH_sensitivity==1
        for i=1:sm_par.n_fluorescent_states
-           sp.det_p(sm_par.fluorescent_states(i),im_par.current_frame)=...
-               sp.det_p(sm_par.fluorescent_states(i),im_par.current_frame)+sp.det_p(sm_par.associated_dark_states(i),im_par.current_frame);
-           sp.det_p(sm_par.associated_dark_states(i),im_par.current_frame)=0;
+           if ~isnan(sm_par.associated_dark_states(i))
+               sp.det_p(sm_par.fluorescent_states(i),im_par.current_frame)=...
+                   sp.det_p(sm_par.fluorescent_states(i),im_par.current_frame)+sp.det_p(sm_par.associated_dark_states(i),im_par.current_frame);
+               sp.det_p(sm_par.associated_dark_states(i),im_par.current_frame)=0;
+           end
        end
     end    
 

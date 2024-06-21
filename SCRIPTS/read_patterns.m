@@ -17,9 +17,11 @@ function     [a_h_all, n,m,nz, n_sp] = read_patterns(in_images_dir, in_images_na
 % MODIFICATION HISTORY:
 %	D.Bourgeois, June 2019: version > simulate_palm_vsn15
 %	D.Bourgeois, November 2019: reads in # of subpatterns for each dye 
+%	D.Bourgeois, January 2024: Modifications for virtual sample now as a SMIS parameter (instead of just the path)
 
-n_dyes=size(in_images_names,1);
-n_sp=ones(1, n_dyes); % Array containing the # of subpatterns in each image
+
+n_fluorophores=size(in_images_names,1);
+n_sp=ones(1, n_fluorophores); % Array containing the # of subpatterns in each image
 [a_h,n,m,nz]=get_pattern(fullfile(char(in_images_dir(1)),char(in_images_names(1))), im_par);
 % n_sp(1)=max(a_h(:))-min(a_h(:))+1;
 n_sp(1)=numel(unique(a_h));
@@ -35,16 +37,16 @@ if numel(size_a_h)==2 && simul_3D==1
     return;
 end
 if numel(size_a_h)==3 && simul_3D==1
-    a_h_all=zeros(n_dyes,size_a_h(1),size_a_h(2),size_a_h(3));
+    a_h_all=zeros(n_fluorophores,size_a_h(1),size_a_h(2),size_a_h(3));
     a_h_all(1,:,:,:)=a_h;
 end
 if numel(size_a_h)==2 && simul_3D==0
-    a_h_all=zeros(n_dyes,size_a_h(1),size_a_h(2));
+    a_h_all=zeros(n_fluorophores,size_a_h(1),size_a_h(2));
     a_h_all(1,:,:)=a_h;
 end
 
-if n_dyes>1
-    for i=2:n_dyes
+if n_fluorophores>1
+    for i=2:n_fluorophores
         [a_h,n,m,nz]=get_pattern(fullfile(char(in_images_dir(i)),char(in_images_names(i))), im_par);
         if size_a_h~=size(a_h)
             disp(['Input pattern number: ',num2str(i),' has a different size than pattern number 1']);
@@ -56,8 +58,8 @@ if n_dyes>1
     end
 end
 
-for k=1:n_dyes
-    disp(['# of subpatterns for dye number: ', num2str(k),  ' : ', num2str(n_sp(k))]);
+for k=1:n_fluorophores
+    disp(['# of subpatterns for fluorophore number: ', num2str(k),  ' : ', num2str(n_sp(k))]);
 end
 clear('a_h');
 

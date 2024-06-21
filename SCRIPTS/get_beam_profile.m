@@ -39,56 +39,15 @@ function lasers = get_beam_profile(n_lasers, lasers, par)
 planck = 6.62e-34; % [J.s]
 speed_of_light = 299790000; %[m/s]
 
-
-c=[par.m/2+0.5 par.n/2+0.5];
-[xpix,ypix] = meshgrid(1:par.m,1:par.n);
-xpix=xpix-c(1);
-ypix=ypix-c(2);
-
 % run over all lasers
 for i=1:n_lasers
     if lasers(i).power>0
-        switch lasers(i).mode
-            case char('Gaussian')
-                sigmax = 1000*lasers(i).fwhm/par.raster/2.35; % in pixels
-                sigmay = 1000*lasers(i).fwhm/par.raster/2.35; % in pixels
-                u=((xpix).*(xpix))/(2*sigmax^2)+((ypix).*(ypix))/(2*sigmay^2);
-                beam_profile=exp(-u);
-                %normalize to the actual total energy [J]
-                %maybe the laser spot extends far out of the image, so we need to normalize
-                %relative to the full laser spot, which we take at 10 sigmas
-                c_ref=[round(10*sigmax)/2+0.5 round(10*sigmay)/2+0.5];
-                [xpix_ref,ypix_ref] = meshgrid(1:round(10*sigmax),1:round(10*sigmay));
-                xpix_ref=xpix_ref-c_ref(1);
-                ypix_ref=ypix_ref-c_ref(2);
-                u_ref=((xpix_ref).*(xpix_ref))/(2*sigmax^2)+((ypix_ref).*(ypix_ref))/(2*sigmay^2);
-                beam_profile_ref=exp(-u_ref);
-                beam_profile=beam_profile/sum(sum(beam_profile_ref))*lasers(i).power*1e-03; % Available power [W] in camera FOV
-                %Calculate power density [W/cm²] at center
-                %raster in nm => 1e+7 to go to cm ; duration in ms => 1e+3 to go to seconds
-                lasers(i).power_density=max(max(beam_profile))/((par.raster*1e-7)^2);
-                disp(['Power density of laser:', num2str(i),' at center [W/cm^2] (100%): ', num2str(lasers(i).power_density)]);               
-            case char('Flat')
-                beam_profile=ones(par.n,par.m);
-                sxy = 1000*lasers(i).fwhm/par.raster; % laser size in pixels
-                if sxy<par.n % If laser size smaller than FOV, set to 0 the missing part
-                    beam_profile(1:round((par.n-sxy)/2),:)=0;
-                    beam_profile(par.n-round((par.n-sxy)/2):par.n,:)=0;
-                end
-                if sxy<par.m % If laser size smaller than FOV, set to 0 the missing part
-                    beam_profile(:,1:round((par.m-sxy)/2))=0;
-                    beam_profile(:,par.m-round((par.m-sxy)/2):par.m)=0;
-                end
-                
-                %normalize to the actual total energy [J]
-                beam_profile=beam_profile/(sxy^2)*lasers(i).power*1e-03; % Available power [W] in camera FOV
-                %Calculate power density [W/cm²] at center
-                %raster in nm => 1e+7 to go to cm ; duration in ms => 1e+3 to go to seconds
-                lasers(i).power_density=max(max(beam_profile))/((par.raster*1e-7)^2);
-                disp(['Power density of laser:', num2str(i),' [W/cm^2] (100%): ', num2str(lasers(i).power_density)]);
-            otherwise
-                error('Error, laser shape not recognized ! Can be ''Gaussian'' or ''Flat''!')
-        end
+        beam_profile=lasers(i).beam_profile;
+        %Calculate power density [W/cm²] at max of profile
+        %raster in nm => 1e+7 to go to cm ; duration in ms => 1e+3 to go to seconds
+        lasers(i).power_density=max(max(beam_profile))/((par.raster*1e-7)^2);
+        disp(['Power density of laser at peak location:', num2str(i),' [W/cm^2] (100%): ', num2str(lasers(i).power_density)]);
+
         %Convert from W to number of photons/s.
         %Energy of one photon [J/ph]
         e_phot=planck*speed_of_light/(lasers(i).wavelength*1e-09);

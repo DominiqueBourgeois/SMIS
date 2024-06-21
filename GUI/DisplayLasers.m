@@ -55,8 +55,9 @@ else
     clf;
 end
 
-w_laser_ok=find([lasers.power]>0);
-n_lasers=numel(w_laser_ok);
+% w_laser_ok=find([lasers.power]>0);
+% n_lasers=numel(w_laser_ok);
+n_lasers=numel(lasers);
 
 
 n_rows=n_lasers; % Number of rows

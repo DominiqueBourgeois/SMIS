@@ -45,6 +45,9 @@ function [donor, acceptor]=get_fret_state_evolution_pct(donor, donor_par, accept
 %	D.Bourgeois, September 2022, optimized for parallel computing
 %	D.Bourgeois, September 2023, corrected bug line 298 (Update sampling
 %	rates): There was an inversion between {sampling_rate_idx}(1) and {sampling_rate_idx}(end)
+%	D.Bourgeois, February 2024, Introduce modifications for states in rapid
+%	exchange (not all fluorescent states need anymore to be either in rapid
+%	exchange or not) + Corrected bugs with the Matlab command "any"
 
 
 % Get the proper indices for donor and acceptor
@@ -156,18 +159,16 @@ E_A=1./(1+(DA_distance./acceptor_par.R0_D).^6); % Fret efficiency from acceptor 
 
 %Eventually correct for fraction of population in fluorescent or dark
 %states in rapid equilibrum
-if donor_par.pH_sensitivity==1
+if donor_par.pH_sensitivity==1 && ~isempty(R0_link_D.w_fluo_state)
     E_A(:,R0_link_D.w_fluo_state)=donor_par.fluorescent_fraction(R0_link_D.id_fluo_state).*E_A(:,R0_link_D.w_fluo_state);
     E_A(:,R0_link_D.w_associated_dark)=(1-donor_par.fluorescent_fraction(R0_link_D.id_associated_dark)).*E_A(:,R0_link_D.w_associated_dark);
 end
-
 %Eventually correct for fraction of population in fluorescent or dark
 %states in rapid equilibrum
-if acceptor_par.pH_sensitivity==1
+if acceptor_par.pH_sensitivity==1 && ~isempty(R0_link_A.w_fluo_state)
     E_D(:,R0_link_A.w_fluo_state)=acceptor_par.fluorescent_fraction(R0_link_A.id_fluo_state).*E_D(:,R0_link_A.w_fluo_state);
     E_D(:,R0_link_A.w_associated_dark)=(1-acceptor_par.fluorescent_fraction(R0_link_A.id_associated_dark)).*E_D(:,R0_link_A.w_associated_dark);
 end
-
 
 %Reset state trace
 donor{state_trace_idx}=[];
@@ -180,21 +181,25 @@ while start_time<end_time
         N_FRET_A_received=E_D(donor{state_idx}==fluo_states_D,acceptor{state_idx}==acceptor_par.state_ids(acceptor_par.R0_A_index)).*Ns_D_lasers(donor{state_idx}); %Compute the # of photons received by acceptor per second
         N_FRET_D_given=sum(N_FRET_A_received); % Total # of photons given by donor in fluorescent state per second
         % N_FRET_D_given is the # of photon given by fluorescent states only,
-        % but its dimension should be 2 is fluorescent state is in equilibrium with a dark state
+        % but its dimension should be 2 if fluorescent state is in equilibrium with a dark state
         if donor_par.pH_sensitivity==1
-            id_dark=donor_par.associated_dark_states(donor{state_idx}==donor_par.fluorescent_states);
-            id_fluo=donor{state_idx};
-            if id_fluo<id_dark
-                id_D=1;
+            id_fluo=donor{state_idx}; % Fluorescent state of donor
+            id_dark=donor_par.associated_dark_states(id_fluo==donor_par.fluorescent_states);
+            if ~isnan(id_dark) % If this particular fluorescent state is in rapid exchange
+                if id_fluo<id_dark
+                    id_D=1;
+                else
+                    id_D=2;
+                end
+                N_FRET_D_given=N_FRET_D_given*[id_fluo<id_dark, id_fluo>id_dark];
             else
-                id_D=2;
+                id_D=nan;
             end
-            N_FRET_D_given=N_FRET_D_given*[id_fluo<id_dark, id_fluo>id_dark];
         end
     else % No FRET
         N_FRET_A_received=0;
         N_FRET_D_given=0; % No FRET photon given by donor
-        id_D=1;
+        id_D=nan;
     end
     
     % Is the acceptor in a fluorescent (FRET) state and donor is photosensitive
@@ -204,19 +209,23 @@ while start_time<end_time
         % N_FRET_A_given is the # of photon given by fluorescent states only,
         % but its dimension should be 2 is fluorescent state is in equilibrium with a dark state
         if acceptor_par.pH_sensitivity==1
-            id_dark=acceptor_par.associated_dark_states(acceptor{state_idx}==acceptor_par.fluorescent_states);
             id_fluo=acceptor{state_idx};
-            if id_fluo<id_dark
-                id_A=1;
+            id_dark=acceptor_par.associated_dark_states(id_fluo==acceptor_par.fluorescent_states);
+            if ~isnan(id_dark) % If this particular fluorescent state is in rapid exchange
+                if id_fluo<id_dark
+                    id_A=1;
+                else
+                    id_A=2;
+                end
+                N_FRET_A_given=N_FRET_A_given*[id_fluo<id_dark, id_fluo>id_dark];
             else
-                id_A=2;
+                id_A=nan;
             end
-            N_FRET_A_given=N_FRET_A_given*[id_fluo<id_dark, id_fluo>id_dark];
         end
     else % No FRET
         N_FRET_D_received=0;
         N_FRET_A_given=0; % No FRET photon given by donor
-        id_A=1;
+        id_A=nan;
     end
     
     % Get the # of photons absorbed by D and A per sampling time
@@ -249,10 +258,10 @@ while start_time<end_time
     
     %If donor started subtrace in a fluorescence state, get the number of
     %photons received (as acceptor) or given (as donor)
-    if any(subtrace_D(2,1),donor_par.fluorescent_states)
+    if any(subtrace_D(2,1)==donor_par.fluorescent_states)
         % Length of subtrace
         subtrace_T=start_time-subtrace_D(1,1); % end of subtrace is now = start_time and beginning = subtrace_D(1,1)
-        if donor_par.pH_sensitivity==1
+        if donor_par.pH_sensitivity==1 && ~isnan(id_D)
             %id_D is the index (defined above of fluorescent state in
             %N_FRET_D_given and N_FRET_D_received
             donor{given_fret_photons_idx}(subtrace_D(2,1)==donor_par.fluorescent_states)=donor{given_fret_photons_idx}(subtrace_D(2,1)==donor_par.fluorescent_states)+subtrace_T*N_FRET_D_given(id_D);
@@ -265,10 +274,11 @@ while start_time<end_time
     
     %If acceptor started subtrace in a fluorescence state, get the number of
     %photons received (as acceptor) or given (as donor)
-    if any(subtrace_A(2,1),acceptor_par.fluorescent_states)
+    % if any(subtrace_A(2,1),acceptor_par.fluorescent_states)
+    if any(subtrace_A(2,1)==acceptor_par.fluorescent_states)
         % Length of subtrace
         subtrace_T=start_time-subtrace_A(1,1); % end of subtrace is now = start_time and beginning = subtrace_A(1,1)
-        if acceptor_par.pH_sensitivity==1
+        if acceptor_par.pH_sensitivity==1 && ~isnan(id_A)
             %id_A is the index (defined above of fluorescent state in
             %N_FRET_A_given and N_FRET_A_received
             acceptor{given_fret_photons_idx}(subtrace_A(2,1)==acceptor_par.fluorescent_states)=acceptor{given_fret_photons_idx}(subtrace_A(2,1)==acceptor_par.fluorescent_states)+subtrace_T*N_FRET_A_given(id_A);

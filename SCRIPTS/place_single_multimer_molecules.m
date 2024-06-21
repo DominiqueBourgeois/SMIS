@@ -33,12 +33,12 @@ a_sm_all=a_all;
 for i=1:n_dyes
     if sm_par(i).is_acceptor==0 % Only place molecules that are not tandem targets (these will be placed next)
         if  im_par.simul_3D==0  % 2D image
-            [X,Y,~,a_sm_all(i,:,:),ok] = place_single_multimer_molecules_simple(squeeze(a_all(i,:,:)),im_par,sm_par(i), n_clusters);
+            [X,Y,~,a_sm_all(i,:,:),ok] = place_single_multimer_molecules_simple(squeeze(a_all(i,:,:)),im_par,sm_par(i), n_clusters(i));
             if ~ok; return; end
             newVals=num2cell(X); [sms(i).sm.x]=newVals{:};
             newVals=num2cell(Y); [sms(i).sm.y]=newVals{:};
         else
-            [X,Y,Z,a_sm_all(i,:,:,:),ok] = place_single_multimer_molecules_simple(squeeze(a_all(i,:,:,:)),im_par,sm_par(i), n_clusters);
+            [X,Y,Z,a_sm_all(i,:,:,:),ok] = place_single_multimer_molecules_simple(squeeze(a_all(i,:,:,:)),im_par,sm_par(i), n_clusters(i));
             if ~ok; return; end
             newVals=num2cell(X); [sms(i).sm.x]=newVals{:};
             newVals=num2cell(Y); [sms(i).sm.y]=newVals{:};

@@ -46,6 +46,7 @@ end
 smis_gui_parameters.DefaultDirs=DefaultDirs;
 
 % Initialize pattern files
+smis_gui_parameters.in_images = repmat({[]},smis_gui_parameters.n_fluorophores,1);
 smis_gui_parameters.in_images_dir = repmat({''},smis_gui_parameters.n_fluorophores,1);
 smis_gui_parameters.in_images_names = repmat({''},smis_gui_parameters.n_fluorophores,1);
 
@@ -68,11 +69,31 @@ smis_gui_parameters.image_size = struct(...
 
 % Initialize drift
 smis_gui_parameters.drift = struct(...
-    'state',0, ... % Vertical dimension
-    'x_drift',[0.2, 0, 0, 0], ... % [nm] Drift in X dimension: order 0, 1, 2 + noise [fractional]
-    'y_drift',[0.2, 0, 0, 0], ... % [nm] Drift in X dimension: order 0, 1, 2 + noise [fractional]
-    'z_drift',[0.2, 0, 0, 0], ... % [nm] Drift in X dimension: order 0, 1, 2 + noise [fractional]
-    'rot_drift',[128, 128, 0, 0.1] ... % Rotational drift: center of rotation x0 y0 in [pixels] and rotation per frame [degrees] and noise [fractional]
+    'state',0, ... % Drift state
+    'x1',0, ... % Constant x drift 
+    'x2',0, ... % Linear x drift 
+    'x3',0, ... % Quadratic x drift 
+    'x_n',0, ... % Random x drift 
+    'x_eval','',... % Custom x drift
+    'y1',0, ... % Constant y drift 
+    'y2',0, ... % Linear y drift 
+    'y3',0, ... % Quadratic y drift 
+    'y_n',0, ... % Random y drift 
+    'y_eval','', ... % Custom y drift
+    'z1',0, ... % Constant z drift 
+    'z2',0, ... % Linear z drift 
+    'z3',0, ... % Quadratic z drift 
+    'z_n',0, ... % Random z drift 
+    'z_eval','', ... % Custom z drift
+    'rot_x0',0, ... % Center of rotation x coordinate
+    'rot_y0',0, ... % Center of rotation y coordinate
+    'rot_theta',0, ... % Constant rotational drift 
+    'rot_n',0, ... % Random rotational drift   
+    'rot_eval','', ... % Custom rotational drift
+    'dx',[], ... % x drift array along frames
+    'dy',[], ... % y drift array along frames
+    'dz',[], ... % z drift array along frames
+    'dtheta',[] ... % rotational drift array along frames
     );
 
 % Initialize objective and PSF
@@ -111,6 +132,8 @@ smis_gui_parameters.lasers(1:smis_gui_parameters.n_lasers)= struct(...
     'on_during_frametime',1, ... % Set to 1 if laser on during frametime
     'on_during_addtime', 0, ... % Set to 1 if laser on during addtime
     'beam_profile', [], ... % Laser beam profile
+    'beam_profile_dir', '', ... % Laser beam profile directory 
+    'beam_profile_file', '', ... % Laser beam profile file
     'max_beam_profile', [], ... % [W/cm²] Laser maximum power density (at beam center)
     'fwhm', 50, ... % [um] size of the laser beam at sample position
     'tirf', 0, ...  % Set to 1 if 3D-TIRF mode
@@ -120,6 +143,7 @@ smis_gui_parameters.lasers(1:smis_gui_parameters.n_lasers)= struct(...
     'mask_file', '', ...  % ROI File for FRAP mode
     'mask_dir', '', ...  % ROI Directory for FRAP mode
     'mask_size', [], ...  % ROI Image size for FRAP mode
+    'mask_pattern', [], ...  % ROI Pattern for FRAP mode
     'polarization', 0, ... % [0: Circular polarization; 1: Linear polarization]
     'phi', 0 ... ; %[azimuthal angle in degrees]
     );
@@ -146,6 +170,8 @@ smis_gui_parameters.Fluorophores.Motion=struct(... %Diffusion behaviour (used if
     'D_independant_transition', 0, ... % For each D, set to 1 if a possible transition must be successful independant of where the molecule may diffuse 
     'DIT', 0, ... % Diffusion Independant transitions
     'Directed_Motion', 0, ... % Set to one if directed motion to be added
+    'Hop_Diffusion', 0, ... % Set to one if hopping diffusion to be added
+    'Hop_Probability', 0, ... % Hopping probabilities
     'V', 0, ... % [um/s] Array of velocities for dye (directed diffusion)
     'persistence_length', -1); % [um] Array of persistence lengths in corresponding patterns for dye (directed diffusion only). Set to small for bulky pattern (0.01, random direction). Set to > width of pseudo-1D pattern (cytosqueletton). Set to -1 for automated choice based on chosen velocities.
     
@@ -250,6 +276,7 @@ smis_gui_parameters.BG = struct(...
     'add_textured_bg',0, ... % [1:Yes/0:No]
     'textured_bg_pattern_dir','', ...
     'textured_bg_pattern_file', '', ...
+    'textured_bg_pattern', '', ...
     'textured_bg_ch1', 50, ... % intensity [photons/100x100nm^2/frame] for channel 1, Poisson noise is assumed
     'textured_bg_ch2', 50, ... % intensity [photons/100x100nm^2/frame] for channel 2, Poisson noise is assumed
     'adjust_textured_bg', 0, ... % [1:Yes/0:No]

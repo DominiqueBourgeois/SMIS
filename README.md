@@ -28,6 +28,32 @@ Bourgeois, D.; Single Molecule Imaging Simulations with Advanced Fluorophore Pho
 ## Reported bugs (to be fixed in the next SMIS release)
 None for now ...
 
+# New features of SMIS 2.3
+
+Introduce more versatility for fluorescent states that are in rapid exchange: (not all fluorescent states need anymore to be either in rapid exchange or not: some fluorescent states can be in rapid exchange and others not)
+
+Introduce hop diffusion: 
+
+Introduce interactive drawing of FRAP zone
+
+Added more flexible laser beam profile options, and the possibility to load experimental laser beam profiles (.tif images)
+
+Added more flexible drift options
+
+Virtual sample image now part of SMIS parameters (not only path to image)
+
+Moved new fluorophore definition menu to main SMIS GUI
+
+Added routine to automatically update input SMIS simulation .mat files to new SMIS versions
+
+Corrected bug in DisplayLasers when one of the laser intensity was set to 0
+
+Corrected bug concerning the contribution of different fluorescent states with their associated pointspread function and recorded number of photons to the detected images.
+
+Corrected but for creation of 2D and 3D NPC qPALM images in Create Virtual Samples menu
+
+Corrected bug for placing molecules in multicolor qPALM setups
+
 # Installation
 The software can be used either as a standalone application for Windows, MacOS or Linux, or as a MATLAB app. 
 SMIS was developed under Windows. Proper running of SMIS under MacOS or Linux has not been thoroughly checked.
@@ -48,7 +74,7 @@ Finally, unzip the SMIS .zip file in your preferred directory.
 To run the standalone SMIS, the Matlab runtime must be installed on your computer. The runtime with proper version should be installed. To download the Matlab runtime, go to https://fr.mathworks.com/products/compiler/matlab-runtime.html
 
 => Windows:
-Make sure Matlab runtime 2022a (9.12) is installed on your computer.
+Make sure Matlab runtime 2024a (24.1) is installed on your computer.
 The SMIS executable is found in: SMIS/STANDALONE/DISTRIBUTE/WINDOWS
 To execute SMIS, double-click on “SMIS.exe”
 

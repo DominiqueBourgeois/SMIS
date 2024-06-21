@@ -14,6 +14,9 @@ function [sm_par, ok]=get_Forster_distance(sm_par, im_par, fluorophore_pairs)
 % MODIFICATION HISTORY:
 %	D.Bourgeois, May 2019. July 2020: R0 from acceptor to donor also
 %	calculated
+%	D.Bourgeois, February 2024, Introduce modifications for states in rapid
+%	exchange (not all fluorescent states need anymore to be either in rapid
+%	exchange or not)
 %-
 
 % for each dye pair we will calculate a Forster radius between donor (in each fluorescent state) and
@@ -48,14 +51,28 @@ for i=1:n_pairs
         return
     end
     % The FRET donor states are the fluorescent states of the donor
-    donor_states_index=find(donor.fluorescent_states>=donor.initial_fluo_state);
-    donor_states_id=donor.fluorescent_states(donor_states_index); % Only consider states > initial state
+    donor_fluorescent_states_index=find(donor.fluorescent_states>=donor.initial_fluo_state);
+    donor_states_id=donor.fluorescent_states(donor_fluorescent_states_index); % Only consider states > initial state
     n_donor_states=numel(donor_states_id);
+
+    if donor.pH_sensitivity==1
+        donor_associated_dark_states_id=donor.associated_dark_states(donor_fluorescent_states_index); % Only consider states > initial state
+    else
+        donor_associated_dark_states_id=[];
+    end
+
     
     % The FRET acceptor states are all the photoactive states of the acceptor
     acceptor_fluorescent_states_index=find(acceptor.fluorescent_states>=acceptor.initial_fluo_state);
     acceptor_fluorescent_states_id=acceptor.fluorescent_states(acceptor_fluorescent_states_index); % Only consider states > initial state
     n_acceptor_fluorescent_states=numel(acceptor_fluorescent_states_id);
+
+    if acceptor.pH_sensitivity==1
+        acceptor_associated_dark_states_id=acceptor.associated_dark_states(acceptor_fluorescent_states_index); % Only consider states > initial state
+    else
+        acceptor_associated_dark_states_id=[];
+    end
+
 
     acceptor_dark_states_index=find(acceptor.photoactive_dark_states>=acceptor.initial_fluo_state);
     acceptor_dark_states_id=acceptor.photoactive_dark_states(acceptor_dark_states_index); % Only consider states > initial state
@@ -67,8 +84,8 @@ for i=1:n_pairs
     R0_index=zeros(1, n_acceptor_states); 
     
     for j=1:n_donor_states
-        em_spectrum=donor.spectral_data.em_spectra(donor_states_index(j)).s; %the emission spectrum of the donor
-        QY=donor.quantum_yield(donor_states_index(j));
+        em_spectrum=donor.spectral_data.em_spectra(donor_fluorescent_states_index(j)).s; %the emission spectrum of the donor
+        QY=donor.quantum_yield(donor_fluorescent_states_index(j));
         for k=1:n_acceptor_fluorescent_states
             exc_spectrum=acceptor.spectral_data.exc_spectra(acceptor_fluorescent_states_index(k)).s; %the emission spectrum of the donor
             exc_eps=acceptor.spectral_data.exc_spectra(acceptor_fluorescent_states_index(k)).eps;
@@ -93,7 +110,7 @@ for i=1:n_pairs
             % a fluorescent state
             if acceptor.pH_sensitivity==1
                 w_associated_fluo_state=find(acceptor.photoactive_dark_states(acceptor_dark_states_index(k))==acceptor.associated_dark_states);
-                if ~isempty(w_associated_fluo_state)
+                if ~isempty(w_associated_fluo_state) 
                     exc_eps=exc_eps/(1-acceptor.fluorescent_fraction(w_associated_fluo_state));
                 end
             end
@@ -106,6 +123,8 @@ for i=1:n_pairs
     end
     sm_par(donor_id).R0_D=R0;
     sm_par(donor_id).R0_D_index=R0_index;
+    sm_par(donor_id).associated_dark_states_used=donor_associated_dark_states_id;
+    sm_par(acceptor_id).associated_dark_states_used=acceptor_associated_dark_states_id;
     sm_par(acceptor_id).R0_A_index=R0_index; % Also pass to acceptor dye
 end
 
@@ -136,14 +155,26 @@ for i=1:n_pairs
     end
     
     % The FRET donor states are the fluorescent states of the donor
-    donor_states_index=find(donor.fluorescent_states>=donor.initial_fluo_state);
-    donor_states_id=donor.fluorescent_states(donor_states_index); % Only consider states > initial state
+    donor_fluorescent_states_index=find(donor.fluorescent_states>=donor.initial_fluo_state);
+    donor_states_id=donor.fluorescent_states(donor_fluorescent_states_index); % Only consider states > initial state
     n_donor_states=numel(donor_states_id);
+
+    if donor.pH_sensitivity==1
+        donor_associated_dark_states_id=donor.associated_dark_states(donor_fluorescent_states_index); % Only consider states > initial state
+    else
+        donor_associated_dark_states_id=[];
+    end
     
     % The FRET acceptor states are all the photoactive states of the acceptor
     acceptor_fluorescent_states_index=find(acceptor.fluorescent_states>=acceptor.initial_fluo_state);
     acceptor_fluorescent_states_id=acceptor.fluorescent_states(acceptor_fluorescent_states_index); % Only consider states > initial state
     n_acceptor_fluorescent_states=numel(acceptor_fluorescent_states_id);
+
+    if acceptor.pH_sensitivity==1
+        acceptor_associated_dark_states_id=acceptor.associated_dark_states(acceptor_fluorescent_states_index); % Only consider states > initial state
+    else
+        acceptor_associated_dark_states_id=[];
+    end
 
     acceptor_dark_states_index=find(acceptor.photoactive_dark_states>=acceptor.initial_fluo_state);
     acceptor_dark_states_id=acceptor.photoactive_dark_states(acceptor_dark_states_index); % Only consider states > initial state
@@ -155,8 +186,8 @@ for i=1:n_pairs
     R0_index=zeros(1, n_acceptor_states);  % Indices of the acceptor states able to FRET
     
     for j=1:n_donor_states
-        em_spectrum=donor.spectral_data.em_spectra(donor_states_index(j)).s; %the emission spectrum of the donor
-        QY=donor.quantum_yield(donor_states_index(j));
+        em_spectrum=donor.spectral_data.em_spectra(donor_fluorescent_states_index(j)).s; %the emission spectrum of the donor
+        QY=donor.quantum_yield(donor_fluorescent_states_index(j));
         for k=1:n_acceptor_fluorescent_states
             exc_spectrum=acceptor.spectral_data.exc_spectra(acceptor_fluorescent_states_index(k)).s; %the emission spectrum of the donor
             exc_eps=acceptor.spectral_data.exc_spectra(acceptor_fluorescent_states_index(k)).eps;           
@@ -165,7 +196,8 @@ for i=1:n_pairs
             %of the acceptor state when 100% present, and then the FRET
             %will be distributed to the states in equilibrium according to
             %their ratio. But exc_eps has been scaled by occupancy of the state, so we must correct that
-            if acceptor.pH_sensitivity==1
+            % if acceptor.pH_sensitivity==1 && ~isnan(acceptor.fluorescent_fraction(acceptor_fluorescent_states_index(k)))
+            if acceptor.pH_sensitivity==1 
                 exc_eps=exc_eps/acceptor.fluorescent_fraction(acceptor_fluorescent_states_index(k));
             end
             
@@ -194,6 +226,8 @@ for i=1:n_pairs
     end
     sm_par(donor_id).R0_D=R0;
     sm_par(donor_id).R0_D_index=R0_index;
+    sm_par(donor_id).associated_dark_states_used=donor_associated_dark_states_id;
+    sm_par(acceptor_id).associated_dark_states_used=acceptor_associated_dark_states_id;
     sm_par(acceptor_id).R0_A_index=R0_index; % Also pass to acceptor dye
 end
 

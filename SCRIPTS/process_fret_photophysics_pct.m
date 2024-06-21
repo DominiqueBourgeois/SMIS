@@ -23,6 +23,9 @@ function [donor_cell, donor_par, acceptor_cell, acceptor_par] = process_fret_pho
 % MODIFICATION HISTORY:
 %	D.Bourgeois, July 2020.
 %	D.Bourgeois, September 2022, optimized for parallel computing
+%	D.Bourgeois, February 2024, Introduce modifications for states in rapid
+%	exchange (not all fluorescent states need anymore to be either in rapid
+%	exchange or not)
 
 
 %% Extract the needed fields for donor and acceptor
@@ -60,14 +63,15 @@ end
 %Define in R0_index which are fluorescent states and associated dark states
 R0_link_D=struct('w_fluo_state',[],'id_fluo_state',[],'w_associated_dark',[],'id_associated_dark',[]);
 if donor_par.pH_sensitivity==1
-    %Which acceptor state is fluorescent ?
+    %Which acceptor state is fluorescent in rapid exchange?
     [tmp_1,tmp_2]=ismember(acceptor_par.R0_D_index,donor_par.fluorescent_states);
-    R0_link_D.w_fluo_state=find(tmp_1==1); % Index of fluorescent states in R0_D_index
+    w_tmp=find(tmp_1==1); % Index of fluorescent states in R0_D_index
+    R0_link_D.w_fluo_state=w_tmp(~isnan(donor_par.associated_dark_states_used)); % Index of fluorescent states in rapid exchange in R0_D_index
     R0_link_D.id_fluo_state=tmp_2(R0_link_D.w_fluo_state); % Index of  fluorescent state in donor_par.fluorescent_states
     %find the associated dark states
-    [tmp_1,tmp_2]=ismember(acceptor_par.R0_D_index,donor_par.associated_dark_states(R0_link_D.id_fluo_state));
-    R0_link_D.w_associated_dark=find(tmp_1==1);
-    R0_link_D.id_associated_dark=tmp_2(R0_link_D.w_associated_dark); % Which fluorescent state id
+    [tmp_1,tmp_2]=ismember(acceptor_par.R0_D_index,donor_par.associated_dark_states_used);
+    R0_link_D.w_associated_dark=find(tmp_1==1); % Index of associated dark state in R0_D_index
+    R0_link_D.id_associated_dark=tmp_2(R0_link_D.w_associated_dark); % Index of associated dark state in donor_par.associated_dark_states_used
 end
 
 
@@ -96,13 +100,14 @@ end
 R0_link_A=struct('w_fluo_state',[],'id_fluo_state',[],'w_associated_dark',[],'id_associated_dark',[]);
 if acceptor_par.pH_sensitivity==1
     %Which acceptor state is fluorescent ?
-    [tmp_1,tmp_2]=ismember(donor_par.R0_D_index,acceptor_par.fluorescent_states);
-    R0_link_A.w_fluo_state=find(tmp_1==1); % Index of fluorescent states in R0_D_index
+    [tmp_1,tmp_2]=ismember(donor_par.R0_D_index,acceptor_par.fluorescent_states); % it is really .R0_D_index, not .R0_A_index which must be considered here
+    w_tmp=find(tmp_1==1); % Index of fluorescent states in R0_D_index
+    R0_link_A.w_fluo_state=w_tmp(~isnan(acceptor_par.associated_dark_states_used)); % Index of fluorescent states in rapid exchange in R0_D_index
     R0_link_A.id_fluo_state=tmp_2(R0_link_A.w_fluo_state); % Index of  fluorescent state in donor_par.fluorescent_states
     %find the associated dark states
-    [tmp_1,tmp_2]=ismember(donor_par.R0_D_index,acceptor_par.associated_dark_states(R0_link_A.id_fluo_state));
-    R0_link_A.w_associated_dark=find(tmp_1==1);
-    R0_link_A.id_associated_dark=tmp_2(R0_link_A.w_associated_dark); % Which fluorescent state id
+    [tmp_1,tmp_2]=ismember(donor_par.R0_D_index,acceptor_par.associated_dark_states_used);
+    R0_link_A.w_associated_dark=find(tmp_1==1); % Index of associated dark state in R0_D_index
+    R0_link_A.id_associated_dark=tmp_2(R0_link_A.w_associated_dark); % Index of associated dark state in acceptor_par.associated_dark_states_used
 end
 
 
