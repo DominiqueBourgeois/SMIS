@@ -1,0 +1,14 @@
+New image:  512 512, Black background
+Double click on Text Tool, choose Font Size and Type
+Write text on image and place at right position
+Ctrl-D to paste text on image
+Make binary image to set text pixel to 255 (Process->Binary)
+Invert LUT (Image -> Color -> LUT Editor)
+Save as .tif
+
+From a .jpg images (eg from the Web) do things like:
+Process -> Sharpen
+Process -> Enhance constrast
+and then
+Image -> Colors -> Split Channels (and then work on the best channel)
+Process -> Binary -> Make Binary 
