@@ -84,7 +84,7 @@ The SMIS executable is found in: SMIS/STANDALONE/DISTRIBUTE/LINUX
 To execute SMIS, open a terminal, move to the directory where SMIS is installed and type at the prompt: “./run_SMIS.sh <mcr_directory>”, where <mcr_directory> is the location of the Matlab runtime. 
 
 => Mac OS:
-Make sure Matlab runtime 2022b (9.13) is installed on your computer.
+Make sure Matlab runtime 2024a (24.1) is installed on your computer.
 The SMIS executable is found in: SMIS/STANDALONE/DISTRIBUTE/MACOS
 To execute SMIS, open a terminal, move to the directory where SMIS is installed and type at the prompt: “./run_SMIS.sh <mcr_directory>”, where <mcr_directory> is the location of the Matlab runtime. 
 
