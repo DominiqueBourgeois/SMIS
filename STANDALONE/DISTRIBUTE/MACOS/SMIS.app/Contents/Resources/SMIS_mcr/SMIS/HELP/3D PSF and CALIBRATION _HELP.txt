@@ -1,8 +1,0 @@
-3D SMIS PSF and calibration
-
-In a 3D SMIS experiment, the sample thickness is defined by the number of pixels in Z times the raster size. Ideally a different raster size than the one used in the XY dimension should be defined in Z but this is not implemented yet. 
-
-The PSF is calculated over the sample thickness, not more. (This could easily be implemented). This means that if there is drift, ie molecules end up going out of the Z positions defined by the sample thickness, the PSF will not be defined there, providing artifactual results. Thus when defining a 3D pattern, it is important that the matrix thickness be actually significantly greater than the pattern itself. 
-If the sample center is displaced relative to the focal plane in the « objective and PSF menu », then the PSF will be calculated over the full sample thickness centered at this displaced position. So that the PSF may appear largely asymmetric. 
-If a bead calibration sample SMIS simulation is done, it is important to realize that the precision of the beads positions in Z will be at best defined by the raster size divided by binning factor. If the binning fact is a small value, the beads may end up not being positioned all at exactly the same height. So it is better to have a virtual sample which is big, allowing a large binning factor to be used. Also, according to what is written above, the virtual sample should be much thicker than just the layer where the beads will be positioned, so that the PSF will be defined over the whole thickness which will be scanned in the bead data acquisition scheme by applying drifting in Z.
-
