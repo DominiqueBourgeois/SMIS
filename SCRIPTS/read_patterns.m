@@ -5,7 +5,7 @@ function     [a_h_all, n,m,nz, n_sp] = read_patterns(in_images_dir, in_images_na
 %
 % INPUTS:
 %	in_images_dir: array of the directory names where the patterns for each dye are
-%	in_images_names: array of the pattern names (.tif format for 2D, .mat format for 3D) for each dye are
+%	in_images_names: array of the pattern names (.tif or .csv format for 2D, .mat .tif or .csv format for 3D) for each dye are
 %	im_par: imaging parameters
 %   simul_3D: flag for 3D imaging
 %
@@ -18,12 +18,12 @@ function     [a_h_all, n,m,nz, n_sp] = read_patterns(in_images_dir, in_images_na
 %	D.Bourgeois, June 2019: version > simulate_palm_vsn15
 %	D.Bourgeois, November 2019: reads in # of subpatterns for each dye 
 %	D.Bourgeois, January 2024: Modifications for virtual sample now as a SMIS parameter (instead of just the path)
+%	D.Bourgeois, June 2025: Add possibility to read .csv virtual samples containing sample coordinates [nm]
 
 
 n_fluorophores=size(in_images_names,1);
 n_sp=ones(1, n_fluorophores); % Array containing the # of subpatterns in each image
 [a_h,n,m,nz]=get_pattern(fullfile(char(in_images_dir(1)),char(in_images_names(1))), im_par);
-% n_sp(1)=max(a_h(:))-min(a_h(:))+1;
 n_sp(1)=numel(unique(a_h));
 size_a_h=size(a_h);
 if numel(size_a_h)==3 && simul_3D==0

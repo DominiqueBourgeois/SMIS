@@ -13,7 +13,7 @@ if im_par.simul_3D==0
                 y_h=[sms(i).sm.y];
                 ds=[sms(i).sm.diff_state];
                 sp=[sms(i).sm.c_sp];
-                v_h = get_initial_directions(x_h, y_h, 0, sp, ds, im_par, sm_par(i));
+                v_h = get_initial_directions(x_h, y_h, 0, sp, ds, im_par, sm_par(i), []);
                 newVals=num2cell(v_h(:,1)); [sms(i).sm.v_x]=newVals{:};
                 newVals=num2cell(v_h(:,2)); [sms(i).sm.v_y]=newVals{:};
             end
@@ -53,7 +53,7 @@ if im_par.simul_3D==0
                     y_h=[unmatched_sm(w_unmatched_1).y];
                     ds=[unmatched_sm(w_unmatched_1).diff_state];
                     sp=[unmatched_sm(w_unmatched_1).c_sp];
-                    v_h = get_initial_directions(x_h, y_h, 0, sp, ds, im_par, sm_par(dye_id_ref));
+                    v_h = get_initial_directions(x_h, y_h, 0, sp, ds, im_par, sm_par(dye_id_ref), []);
                     newVals=num2cell(v_h(:,1)); [unmatched_sm(w_unmatched_1).v_x]=newVals{:};
                     newVals=num2cell(v_h(:,2)); [unmatched_sm(w_unmatched_1).v_y]=newVals{:};
                 end
@@ -70,7 +70,7 @@ if im_par.simul_3D==0
                     y_h=[unmatched_sm(w_unmatched_2).y];
                     ds=[unmatched_sm(w_unmatched_2).diff_state];
                     sp=[unmatched_sm(w_unmatched_2).c_sp];
-                    v_h = get_initial_directions(x_h, y_h, 0, sp, ds, im_par, sm_par(dye_id_ref));
+                    v_h = get_initial_directions(x_h, y_h, 0, sp, ds, im_par, sm_par(dye_id_ref), []);
                     newVals=num2cell(v_h(:,1)); [unmatched_sm(w_unmatched_2).v_x]=newVals{:};
                     newVals=num2cell(v_h(:,2)); [unmatched_sm(w_unmatched_2).v_y]=newVals{:};
                 end
@@ -93,7 +93,7 @@ else % 3D case
                 z_h=[sms(i).sm.z];
                 ds=[sms(i).sm.diff_state];
                 sp=[sms(i).sm.c_sp];
-                v_h = get_initial_directions(x_h, y_h, z_h, sp, ds, im_par, sm_par(i));
+                v_h = get_initial_directions(x_h, y_h, z_h, sp, ds, im_par, sm_par(i), []);
                 newVals=num2cell(v_h(:,1)); [sms(i).sm.v_x]=newVals{:};
                 newVals=num2cell(v_h(:,2)); [sms(i).sm.v_y]=newVals{:};
                 newVals=num2cell(v_h(:,3)); [sms(i).sm.v_z]=newVals{:};
@@ -136,7 +136,7 @@ else % 3D case
                     z_h=[unmatched_sm(w_unmatched_1).z];
                     ds=[unmatched_sm(w_unmatched_1).diff_state];
                     sp=[unmatched_sm(w_unmatched_1).c_sp];
-                    v_h = get_initial_directions(x_h, y_h, z_h, sp, ds, im_par, sm_par(dye_id_ref));
+                    v_h = get_initial_directions(x_h, y_h, z_h, sp, ds, im_par, sm_par(dye_id_ref), []);
                     newVals=num2cell(v_h(:,1)); [unmatched_sm(w_unmatched_1).v_x]=newVals{:};
                     newVals=num2cell(v_h(:,2)); [unmatched_sm(w_unmatched_1).v_y]=newVals{:};
                     newVals=num2cell(v_h(:,3)); [unmatched_sm(w_unmatched_1).v_z]=newVals{:};
@@ -155,7 +155,7 @@ else % 3D case
                     z_h=[unmatched_sm(w_unmatched_2).z];
                     ds=[unmatched_sm(w_unmatched_2).diff_state];
                     sp=[unmatched_sm(w_unmatched_2).c_sp];
-                    v_h = get_initial_directions(x_h, y_h, z_h, sp, ds, im_par, sm_par(dye_id_ref));
+                    v_h = get_initial_directions(x_h, y_h, z_h, sp, ds, im_par, sm_par(dye_id_ref), []);
                     newVals=num2cell(v_h(:,1)); [unmatched_sm(w_unmatched_2).v_x]=newVals{:};
                     newVals=num2cell(v_h(:,2)); [unmatched_sm(w_unmatched_2).v_y]=newVals{:};
                     newVals=num2cell(v_h(:,3)); [unmatched_sm(w_unmatched_2).v_z]=newVals{:};

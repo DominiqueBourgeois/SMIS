@@ -17,10 +17,11 @@ function c=get_tirf_hilo_correction_factor(z, laser, im_par)
 %	D.Bourgeois, November 2020.
 
 theta=laser.tirf_angle*pi/180; % theta angle in rad
+sample_shift=im_par.obj.sample_z_coverslip; % Height of sample assigned to coverslip position [nm]
 
 if theta>=im_par.obj.critical_angle   % TIRF mode
     %Formula from Axelrod Meth Enz 2003 eq 4
-    c=laser.tirf_amplification*exp(-z*im_par.raster/laser.d);    
+    c=laser.tirf_amplification*exp(-(z*im_par.raster-sample_shift)/laser.d);    
 else % HILO mode
     theta_sample=asin(im_par.obj.immersion_indice/im_par.obj.sample_indice*sin(theta));
     d=1000*laser.fwhm/tan(theta_sample); % in [nm]

@@ -21,6 +21,12 @@ function [u_mean, im]=get_directions_on_2D_pattern(ind, x0, y0, s, show, im, D)
 %
 % MODIFICATION HISTORY:
 %	D.Bourgeois, November 2020: version > simulate_palm_vsn16.3
+%	D.Bourgeois, October 2024: version SMIS 2.3 Bug correction (not
+%	completely sure this is completely fixed ...): see L44. If there was
+%	only one vector possible (numel(ind)=1) the script was stopping
+%	(u_mean=0, which induces smis crash => this line should not be reached
+%	...)
+
 
 if nargin<6
     im=[];
@@ -37,7 +43,8 @@ end
 
 
 %Get the angles into groups.
-if numel(ind)>1 % Only do it if necessary
+% if numel(ind)>1 % Only do it if necessary
+if ~isempty(ind) % Only do it if a possible vector was found
     gt=zeros(numel(ind),2); % Create the group array of angles
     gt(:,1)=ind; % Create the group array
     gt(1,2)=1; % Assign group number =1 to the first element
@@ -99,7 +106,7 @@ if numel(ind)>1 % Only do it if necessary
         u_mean(:,k)=mean(u,2); % And get the average unit vector
     end
 else
-    u_mean=[];
+    u_mean=[]; % Should probably never be reached ... as this maked smis crash.
 end
 
 if show==1 % Set up image if we want to see it

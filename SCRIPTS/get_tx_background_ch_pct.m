@@ -1,4 +1,4 @@
-function det_im=get_tx_background_ch_pct(det_im, im_par, tx_pattern, attenuation_factor, lasers, channel)
+function [det_im, bg_level]=get_tx_background_ch_pct(det_im, im_par, tx_pattern, attenuation_factor, lasers, channel)
 
 % PURPOSE:Les
 %   Get background on Channel 1 or 2
@@ -6,13 +6,14 @@ function det_im=get_tx_background_ch_pct(det_im, im_par, tx_pattern, attenuation
 % INPUTS:
 %	det_im: the detector images 
 %	im_par: the imaging parameters
-%   tx_image: the texture binary image
+%   tx_pattern: the texture binary image (is resized to detector size if needed)
 %	attenuation_factor: the attenuation factor due to accumulated dose and
 %   lasers: the lasers
 %   channel: the channel number
 %
 % OUTPUTS:
 %	det_im: the updated detector images 
+%   bg_level: max level of background [ph] before applying Poisson statistics
 %
 % MODIFICATION HISTORY:
 %	D.Bourgeois, September 2019.
@@ -21,8 +22,14 @@ function det_im=get_tx_background_ch_pct(det_im, im_par, tx_pattern, attenuation
 %	D.Bourgeois, September 2021: Make background calculation per s instead
 %	of per frame
 %	D.Bourgeois, September 2022, introduce det_im
+%	D.Bourgeois, December 2024, introduce bg_level
 
-if channel>2; message('Channel does not exist !'); return; end
+if channel>2
+    bg_level=[];
+    message('Channel does not exist !');
+    return
+end
+
 if channel==1
     tx_bg_p = im_par.bg.textured_bg_ch1*(im_par.raster*0.01)^2; %background per pixel
     tx_bg_laser_sensitivity=im_par.bg.textured_bg_laser_sensitivity_ch1;
@@ -71,9 +78,14 @@ if tx_bg_p>0
                 im_par.frametime*1e-3;
             
         end
-        tx_bg_fluo=tx_bg_fluo.*tx_pattern; % here multiply by the pattern
+
+
+        tx_bg_fluo=tx_bg_fluo.*double(imresize(tx_pattern,[im_par.n,im_par.m])); % here multiply by the pattern
         % the attenuated signal is then
-        tx_bg_fluo=imnoise(uint16(tx_bg_p*attenuation_factor.*tx_bg_fluo),'poisson');
+        tx_bg_fluo=tx_bg_p*attenuation_factor.*tx_bg_fluo;       
+        bg_level=max(tx_bg_fluo(:));
+
+        tx_bg_fluo=imnoise(uint16(tx_bg_fluo),'poisson');
         %Note that there are rounding errors apparently that makes the
         %noise pattern not very smooth along the beam profile
     else % Simple estimation of background
@@ -87,19 +99,19 @@ if tx_bg_p>0
                 im_par.frametime*1e-3; % duration [s]
         end
         % the attenuated signal is then
-        tx_bg_fluo=uint16(tx_bg_p.*tx_bg_fluo.*tx_pattern);
-        tx_bg_fluo=imnoise(tx_bg_fluo,'poisson');
+        tx_bg_fluo=tx_bg_p.*tx_bg_fluo.*double(imresize(tx_pattern,[im_par.n,im_par.m]));
+        bg_level=max(tx_bg_fluo(:));
+        tx_bg_fluo=imnoise(uint16(tx_bg_fluo),'poisson');
         
         %tx_bg_fluo=imnoise(uint16(tx_bg_p*tx_pattern),'poisson');
-    end      
-end    
-    %%
-    
-    
+    end
+
     if channel==1
         det_im.emccd_im_ch1=det_im.emccd_im_ch1+double(tx_bg_fluo);
     else
         det_im.emccd_im_ch2=det_im.emccd_im_ch2+double(tx_bg_fluo);
     end
+else
+    bg_level=0;
 end
 

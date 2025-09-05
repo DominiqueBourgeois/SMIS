@@ -24,77 +24,49 @@ cluster_diam=par.cluster_diam; % [pixels] of receptors clusters
 cluster_pos_id=par.cluster_pos_id; % id of area where to position receptors clusters
 
 %%
-im=imread(ImageFile);
-im(im<128)=0;
-im(im>=128 & im<255)=128;
-im(im==128)=cyto_id;
+
+image_border=round(plasmic_layer_thick/2)+3; % Define a border taking into account the thickness of the plasmic membrane
+im=imresize(imread(ImageFile),[x_dim-2*image_border y_dim-2*image_border]) ;
+im(im<128)=bg_id;
+im(im>=128 & im<255)=cyto_id;
 im(im==255)=nuc_id;
-im(im==0)=bg_id;
 
 MySample=zeros(x_dim,y_dim);
 
-%Define bottom plane
+%Insert the cell image into MySample
 s_im=size(im);
-MySample(round(x_dim-s_im(1)):round(x_dim-s_im(1))+s_im(1)-1,round(y_dim-s_im(2)):round(y_dim-s_im(2))+s_im(2)-1,1)=im;
+MySample(round(image_border):round(image_border)+s_im(1)-1,round(image_border):round(image_border)+s_im(2)-1,1)=im;
 
 
-w_bg=find(MySample==0); % Indices for background
-w_cyt=find(MySample==cyto_id); % Indices for cytoplasm
-w_nuc=find(MySample==nuc_id); % Indices for nucleus
-[x_bg,y_bg]=ind2sub(size(MySample),w_bg);
-[x_nuc,y_nuc]=ind2sub(size(MySample),w_nuc);
+%% add plasmic & nuclear membranes
+disp('Adding plasmic and nuclear membranes ...');
 
-%% add a plasmic membrane
-disp('Adding a plasmic membrane...');
-r=(plasmic_layer_thick-1)/2;
+MySample = double(MySample);
 
-MyWaitBar = waitbar(0,'Adding a plasmic membrane ...');
+% Create binary masks for each zone
+Nuc = (MySample == nuc_id);
+Cyt = (MySample == cyto_id);
+Bg = (MySample == bg_id);
 
-for i=1:numel(w_cyt)
-    if i/100==fix(i/100)
-        waitbar(i/numel(w_cyt),MyWaitBar);
-    end
-    [x,y]=ind2sub(size(MySample),w_cyt(i));
-    %Get distance to extracellular space
-    d2=(x-x_bg).^2+(y-y_bg).^2;
-    min_d=sqrt(min(d2));
+% Define structuring elements for dilation
+seNuc = strel('disk', nuc_layer_thick);
+seCyt = strel('disk', plasmic_layer_thick);
 
-    w_min_d=find(d2==min(d2),1);
+% Dilate the central zone and subtract the original to get the frontier
+dilatedNuc = imdilate(Nuc, seNuc);
+frontierNucCyt = dilatedNuc & Cyt;
 
-    if min_d==1 % We are at the border
-        % Add membrane
-        MySample(round(x_bg(w_min_d)-r):round(x_bg(w_min_d)+r),...
-            round(y_bg(w_min_d)-r):round(y_bg(w_min_d)+r))=membrane_id;
-    end
-end
-close(MyWaitBar)
+% Dilate the intermediate zone and subtract the original to get the frontier
+dilatedCyt = imdilate(Cyt, seCyt);
+frontierCytBg = dilatedCyt & Bg;
 
-%% add a nuclear membrane
-disp('Adding a nuclear membrane...');
-r=(nuc_layer_thick-1)/2;
+% Assign values to the frontiers in the original image
+MySample(frontierNucCyt) = nuc_membrane_id;
+MySample(frontierCytBg) = membrane_id;
 
-MyWaitBar = waitbar(0,'Adding a nuclear membrane ...');
+% Ensure the output is an image matrix of type uint8
+MySample = uint8(MySample);
 
-for i=1:numel(w_cyt)
-    if i/100==fix(i/100)
-        waitbar(i/numel(w_cyt),MyWaitBar);
-    end
-    [x,y]=ind2sub(size(MySample),w_cyt(i));
-    %Get distance to extracellular space
-    d2=(x-x_nuc).^2+(y-y_nuc).^2;
-    min_d=sqrt(min(d2));
-
-    w_min_d=find(d2==min(d2),1);
-
-    if min_d==1 % We are at the border
-        % Add nuc membrane
-        MySample(round(x_nuc(w_min_d)-r):round(x_nuc(w_min_d)+r),...
-            round(y_nuc(w_min_d)-r):round(y_nuc(w_min_d)+r))=nuc_membrane_id;
-    end
-
-end
-
-close(MyWaitBar)
 
 %% add small receptor clusters
 if n_clusters>1
@@ -117,13 +89,7 @@ if n_clusters>1
     r=randperm(numel(w_clus));
     w_selected=r(1:n_clusters);
 
-    MyWaitBar = waitbar(0,'Adding receptor clusters ...');
-
     for i=1:n_clusters
-        if i/100==fix(i/100)
-            waitbar(i/numel(n_clusters),MyWaitBar);
-        end
-
         x=x_clus(w_selected(i));
         y=y_clus(w_selected(i));
         d2=(x-x_clus).^2+(y-y_clus).^2;
@@ -132,8 +98,6 @@ if n_clusters>1
         MySample(x_clus(w),y_clus(w))=cluster_id;
 
     end
-    close(MyWaitBar)
-
 end
 
 %%

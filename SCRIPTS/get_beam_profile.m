@@ -11,7 +11,7 @@ function lasers = get_beam_profile(n_lasers, lasers, par)
 % INPUTS:
 %   n_lasers: number of lasers
 %	laser: a structure containing laser parameters (power, duration, fwhm, wavelength).
-%   par: a structure containing some imaging parameters (n, m, raster).
+%   par: a structure containing some imaging parameters (raster).
 %
 % OUTPUTS:
 %	laser: updated laser structure with beam_profile, power density, max power density

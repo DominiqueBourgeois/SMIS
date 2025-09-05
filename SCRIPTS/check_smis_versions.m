@@ -79,4 +79,9 @@ if ~isfield(smis_par.drift,'x1')
 
 end
 
+% Update sample height corresponding to coverslip position smis vsn2.3
+% app.ObjectivePSFpar.sample_z_coverslip=value;
+if ~isfield(smis_par.obj_and_psf,'sample_z_coverslip')
+    smis_par.obj_and_psf.sample_z_coverslip=0;
+end
 
