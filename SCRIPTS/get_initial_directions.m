@@ -1,4 +1,4 @@
-function v_h = get_initial_directions(x_h, y_h, z_h, sp, ds, im_par, sm_par)
+function v_h = get_initial_directions(x_h, y_h, z_h, sp, ds, im_par, sm_par, w_patterns)
 
 % PURPOSE:
 % Get initial velocity vectors for sm's at x,y,z diffusing in 2D or 3D at
@@ -12,15 +12,21 @@ function v_h = get_initial_directions(x_h, y_h, z_h, sp, ds, im_par, sm_par)
 %   ds: the current diffusion states for the sm's
 %	im_par: the imaging parameters
 %	sm_par: the sm parameters
+%   w_patterns: indices of virtual sample subpatterns
 %
 % OUTPUTS:
 %	v_h: the initial speed vectors on high-resolution image [raster.s-1]
 %
 % MODIFICATION HISTORY:
 %	D.Bourgeois, November 2020: version > simulate_palm_vsn16.3
+%	D.Bourgeois, September 2024, introduce sm_pattern_indices, now
+%	disconnected from sm_par, except at the beginning of smis_main 
 
-w_patterns=sm_par.w_patterns;
 show = 0; % Set to 1 for debug; 2 for final view
+
+if isempty(w_patterns) % Treat case where the w_patterns has not been disconnected from sm_par (beginning of smis_main for get_V_ini.m)
+    w_patterns=sm_par.w_patterns;
+end
 
 %2D case
 if im_par.simul_3D==0
@@ -53,6 +59,7 @@ if im_par.simul_3D==0
             %look at the intersection
             ind = sub2ind(sz,round(x),round(y)); % the index associated to the sphere
             ind_cp=intersect(ind,w_patterns(c_sp_id).w); % the indices of the sphere on the current pattern
+
             
             if show==1 % Set up image if we want to see it
                 I=zeros(sz);

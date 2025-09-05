@@ -32,6 +32,7 @@ function [x_h_d, y_h_d, z_h_d, sm] = get_new_XYZ_pct(x_h, y_h, z_h, sm, D_ras, d
 %	D.Bourgeois, September 2022, optimized for parallel computing
 %	D.Bourgeois, February 2023, introduce sm_pattern_indices, now disconnected from sm_par
 %	D.Bourgeois, January 2024, introduce hop diffusion restraint
+%	D.Bourgeois, September 2024, add w_patterns variable in calls to get_initial_directions.m
 
 %Extract the useful indices
 % x_idx=1;
@@ -56,7 +57,7 @@ n_diff_state_idx=19;
 % diff_state_trace_idx=20;
 % matched_idx=21;
 
-w=sm_pattern_indices.w_patterns; %	w: indices of patterns in high resolution image
+w_patterns=sm_pattern_indices.w_patterns; %	w: indices of patterns in high resolution image
 
 c_sp=sm{c_sp_idx}; % current subpattern
 c_ds=sm{diff_state_idx}; % current diffusion state
@@ -77,14 +78,14 @@ if force_change==1
     %Search for the closest pixel in new pattern and move molecule
     %there
     if n_sp~=c_sp
-        P = move_molecule_to_new_pattern([x_h,y_h,z_h],w(sm_par.n_sp_id==n_sp).w,im_par);
+        P = move_molecule_to_new_pattern([x_h,y_h,z_h],w_patterns(sm_par.n_sp_id==n_sp).w,im_par);
         x_h_d=P(1)+rand;
         y_h_d=P(2)+rand;
         z_h_d=P(3)+rand;
         sm{diff_state_idx}=n_ds; % update diffusion state
         sm{c_sp_idx}=n_sp; % update current pattern
         if sm_par.V(n_ds)>0 % % update velocity
-            v_h = get_initial_directions(x_h_d, y_h_d, z_h_d, n_sp, n_ds, im_par, sm_par);
+            v_h = get_initial_directions(x_h_d, y_h_d, z_h_d, n_sp, n_ds, im_par, sm_par, w_patterns);
             sm{v_x_idx}=v_h(1);
             sm{v_y_idx}=v_h(2);
             sm{v_z_idx}=v_h(3);
@@ -155,7 +156,7 @@ while crossing_found
 
             if ~(any([x_h_d<1 y_h_d<1 z_h_d<1]) || any([x_h_d>S(1) y_h_d>S(2) z_h_d>S(3)])) % check if molecule is inside the FOV
                 w_b = sub2ind(S,round(x_h_d),round(y_h_d),round(z_h_d)); % the associated index
-                if min(abs(w_b-w(sm_par.n_sp_id==sm_par.D_confined(n_ds)).w))==0 % Success, molecule jumped to new pattern !
+                if min(abs(w_b-w_patterns(sm_par.n_sp_id==sm_par.D_confined(n_ds)).w))==0 % Success, molecule jumped to new pattern !
                     jump_ok=1;
                 else
                     jump_ok=0;
@@ -170,7 +171,7 @@ while crossing_found
                 sm{c_sp_idx}=n_sp; % update current pattern
                 sm{diff_state_idx}=n_ds; % update current diffusion state
                 % If there is directed motion, the velocity must be reset and reinitialized when there is a change of pattern
-                v_h = get_initial_directions(x_h_d, y_h_d, z_h_d, n_sp, n_ds, im_par, sm_par);
+                v_h = get_initial_directions(x_h_d, y_h_d, z_h_d, n_sp, n_ds, im_par, sm_par, w_patterns);
                 sm{v_x_idx}=v_h(1);
                 sm{v_y_idx}=v_h(2);
                 sm{v_z_idx}=v_h(3);
@@ -203,7 +204,7 @@ while crossing_found
                 sm{v_y_idx}=v_h(2)/norm(v_h)*1e+3*sm_par.V(n_ds)/im_par.raster*im_par.binning;
                 sm{v_z_idx}=v_h(3)/norm(v_h)*1e+3*sm_par.V(n_ds)/im_par.raster*im_par.binning;
             else % In that case there was no specific direction for speed, we need to initialize it.
-                v_h = get_initial_directions(x_h_d, y_h_d, z_h_d, n_sp, n_ds, im_par, sm_par);
+                v_h = get_initial_directions(x_h_d, y_h_d, z_h_d, n_sp, n_ds, im_par, sm_par, w_patterns);
                 sm{v_x_idx}=v_h(1);
                 sm{v_y_idx}=v_h(2);
                 sm{v_z_idx}=v_h(3);
@@ -246,7 +247,7 @@ while crossing_found
         if ~(any([x_h_d<1 y_h_d<1 z_h_d<1]) || any([x_h_d>S(1) y_h_d>S(2) z_h_d>S(3)])) % check if molecule is inside the FOV
             w_b = sub2ind(S,round(x_h_d),round(y_h_d),round(z_h_d)); % the associated index
 
-            if ismember(w_b,w(sm_par.n_sp_id==sm_par.D_confined(c_ds)).w) % the indices of current pattern is that where sm_par.n_sp_id=sm_par.D_confined(c_ds) CHANGE 16 01 2021
+            if ismember(w_b,w_patterns(sm_par.n_sp_id==sm_par.D_confined(c_ds)).w) % the indices of current pattern is that where sm_par.n_sp_id=sm_par.D_confined(c_ds) CHANGE 16 01 2021
                 on_pattern=true;  % molecule stays on the current pattern, we're ok.
                 if n_ds~=c_ds && sm_par.D_confined(n_ds)==sm_par.D_confined(c_ds) % Case where there is
                     % a change in diffusion state within a single subpattern
@@ -258,14 +259,14 @@ while crossing_found
                         sm{v_y_idx}=v_h(2)/norm(v_h)*1e+3*sm_par.V(n_ds)/im_par.raster*im_par.binning;
                         sm{v_z_idx}=v_h(3)/norm(v_h)*1e+3*sm_par.V(n_ds)/im_par.raster*im_par.binning;
                     else % In that case there was no specific direction for speed, we need to initialize it.
-                        v_h = get_initial_directions(x_h_d, y_h_d, z_h_d, n_sp, n_ds, im_par, sm_par);
+                        v_h = get_initial_directions(x_h_d, y_h_d, z_h_d, n_sp, n_ds, im_par, sm_par, w_patterns);
                         sm{v_x_idx}=v_h(1);
                         sm{v_y_idx}=v_h(2);
                         sm{v_z_idx}=v_h(3);
                     end
                 end
             elseif n_sp~=c_sp % look if there is a possible change in subpattern.
-                if min(abs(w_b-w(sm_par.n_sp_id==sm_par.D_confined(n_ds)).w))==0
+                if min(abs(w_b-w_patterns(sm_par.n_sp_id==sm_par.D_confined(n_ds)).w))==0
                     on_pattern=true;  % molecule moved to the new pattern, we're ok.
                     sm{c_sp_idx}=n_sp; % update current pattern
                     sm{diff_state_idx}=n_ds; % update current diffusion state
@@ -273,7 +274,7 @@ while crossing_found
                     % the velocity must be reset and reinitialized when there is a change of pattern
                     % if sm_par.V(c_ds)>0
                     if sm_par.V(n_ds)>0 % Changed 17/01/21
-                        v_h = get_initial_directions(x_h_d, y_h_d, z_h_d, n_sp, n_ds, im_par, sm_par);
+                        v_h = get_initial_directions(x_h_d, y_h_d, z_h_d, n_sp, n_ds, im_par, sm_par, w_patterns);
                         sm{v_x_idx}=v_h(1);
                         sm{v_y_idx}=v_h(2);
                         sm{v_z_idx}=v_h(3);
@@ -289,7 +290,7 @@ while crossing_found
 
     %check for crossing undesired pattern
     if sm_par.Hop_Diffusion==1
-        crossing_found=get_potential_crossing_XYZ([x_h_s,y_h_s,z_h_s],[x_h_d,y_h_d,z_h_d],c_sp,n_sp,sm_par.n_sp_id, w, S);
+        crossing_found=get_potential_crossing_XYZ([x_h_s,y_h_s,z_h_s],[x_h_d,y_h_d,z_h_d],c_sp,n_sp,sm_par.n_sp_id, w_patterns, S);
         if crossing_found==1
             Test=rand;
             if Test<sm_par.Hop_Probability(c_ds) % Allow crossing

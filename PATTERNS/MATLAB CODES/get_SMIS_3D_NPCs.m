@@ -74,7 +74,7 @@ v=1;
 for theta=0:2*pi/8:(2*pi-2*pi/8)
     x=npc_im_size/2+npc_in*cos(theta); x=round(x);
     y=npc_im_size/2+npc_in*sin(theta); y=round(y);
-    
+
     npc_im(x:x+nup96_size_xy-1, y:y+nup96_size_xy-1,lower_layer)=v;
     if qPALM_option==1
         v=v+1;
@@ -83,7 +83,7 @@ for theta=0:2*pi/8:(2*pi-2*pi/8)
     if qPALM_option==1
         v=v+1;
     end
-    
+
 end
 %Outer ring
 for theta=0:2*pi/8:(2*pi-2*pi/8)
@@ -96,7 +96,7 @@ for theta=0:2*pi/8:(2*pi-2*pi/8)
     npc_im(x:x+nup96_size_xy-1, y:y+nup96_size_xy-1,upper_layer)=v;
     if qPALM_option==1
         v=v+1;
-    end   
+    end
 end
 
 
@@ -131,22 +131,22 @@ for i=1:N
         rx=npc_rotation_x(i);
         ry=npc_rotation_z(i);
         rz=npc_rotation_y(i);
-        
+
         %Rotation around x
         tmp_im=permute(npc_im,[1,3,2]); % permute y and z
         tmp_im=imrotate(tmp_im,rx,'bilinear','crop'); % rotation around z
         tmp_im=permute(tmp_im,[1,3,2]); % permute y and z
-        
+
         %Rotation around y
         tmp_im=permute(tmp_im,[2,1,3]); % permute y and z
         tmp_im=imrotate(tmp_im,ry,'bilinear','crop'); % rotation around z
         tmp_im=permute(tmp_im,[2,1,3]); % permute y and z
-        
+
         %Rotation around z
         tmp_im=permute(tmp_im,[3,2,1]); % permute y and z
         tmp_im=imrotate(tmp_im,rz,'bilinear','crop'); % rotation around z
         npc_im_rotated=permute(tmp_im,[3,2,1]); % permute y and z
-        
+
         w=find(npc_im_rotated>0);
         [~,s]=sort(npc_im_rotated(w),'descend');
         npc_im_rotated(w(s(1:n_pix)))=1:V;
@@ -154,8 +154,8 @@ for i=1:N
     else
         npc_im_rotated=npc_im;
     end
-    
-    
+
+
     sep_ok=0;
     trial_number=1;
     while ~sep_ok==1 && trial_number<1000
@@ -182,9 +182,9 @@ for i=1:N
     if qPALM_option==0
         im3D(X-npc_im_size/2:X+npc_im_size/2-1,Y-npc_im_size/2:Y+npc_im_size/2-1,z_min:z_max)=npc_im_rotated; % Fill the corresponding 3D region
     else
-        
+
         npc_im_rotated(npc_im_rotated>0)=npc_im_rotated(npc_im_rotated>0)+(i-1)*V;
-        
+
         im3D(X-npc_im_size/2:X+npc_im_size/2-1,Y-npc_im_size/2:Y+npc_im_size/2-1,z_min:z_max)=npc_im_rotated; % Fill the corresponding 3D region
     end
 end
@@ -211,6 +211,34 @@ end
 Sample=zeros(size(im,1)+2*cell_border_offset,size(im,2)+2*cell_border_offset,size(im,3));
 Sample(cell_border_offset+1:cell_border_offset+size(im,1),...
     cell_border_offset+1:cell_border_offset+size(im,2),:)=im;
+
+% Make sure qPALM patterns start at 1
+if qPALM_option==1
+    u_val=unique(Sample);
+    if (numel(u_val)-1)~=numel(32*N)
+        MyMessage=['Number of labeled pixels created (',num2str(numel(u_val)-1), ') not equal to number of coordinates (',num2str(numel(32*N)),') !'];
+        disp(MyMessage);
+        MyDlg=warndlg(MyMessage);
+        waitfor(MyDlg)
+        %Reorder the clusters from 1 to numel(u_val)-1
+        % Get the unique pixel values and sort them
+        disp('Reassigning pixels ...');
+        sortedValues = sort(u_val);
+
+        % Create a mapping from the original values to the new values
+        valueMap = containers.Map('KeyType', 'double', 'ValueType', 'double');
+        for i = 1:length(sortedValues)
+            valueMap(sortedValues(i)) = i-1;
+        end
+
+        % Reassign the pixel values
+        newImage = zeros(size(Sample));
+        for i = 1:numel(Sample)
+            newImage(i) = valueMap(Sample(i));
+        end
+        Sample=newImage;
+    end
+end
 
 
 %% Show the cell

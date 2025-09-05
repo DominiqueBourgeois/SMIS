@@ -20,6 +20,10 @@ r_shift=par.random_shift;
 %safety border
 border=par.border;
 
+%Actual values to use
+n2=n-border;
+m2=m-border;
+
 feature_id=1;
 %%
 MySample = double(zeros(m,n));
@@ -30,20 +34,17 @@ if (n_col>n_row && m<n) || (n_col<n_row && m>n)
     n_col=tmp;
 end
 
-inc_r=fix(n/n_row)+1; % # of increments along rows
-inc_c=fix(m/n_col)+1; % # of increments along columns
+inc_r=fix(n2/n_row)+1; % # of increments along rows
+inc_c=fix(m2/n_col)+1; % # of increments along columns
 
 x0=inc_r:inc_r:inc_r*n_row;
 y0=inc_c:inc_c:inc_c*n_col;
 
-offset_x=(x0(1)+x0(end)-(n-1))/2;
-offset_y=(y0(1)+y0(end)-(m-1))/2;
+offset_x=(x0(1)+x0(end)-(n2-1))/2;
+offset_y=(y0(1)+y0(end)-(m2-1))/2;
 
-x0=x0-fix(offset_x);
-y0=y0-fix(offset_y);
-
-% x0=x0-round(inc_r/2);
-% y0=y0-round(inc_c/2);
+x0=x0-fix(offset_x)+border;
+y0=y0-fix(offset_y)+border;
 
 v=1; % pattern id, to be increased for qPALM
 
@@ -81,11 +82,36 @@ disp('Done !')
 
 MySample=MySample*feature_id;
 
-if border>0
-    MySample(1:border,:)=0;
-    MySample(end-border:end,:)=0;
-    MySample(:,1:border)=0;
-    MySample(:,end-border:end)=0;
+% if border>0
+%     MySample(1:border,:)=0;
+%     MySample(end-border:end,:)=0;
+%     MySample(:,1:border)=0;
+%     MySample(:,end-border:end)=0;
+% end
+
+% Make sure qPALM patterns start at 1
+if qPALM_option==1
+    u_val=unique(MySample);
+    if (numel(u_val)-1)~=n_row*n_col
+        disp(['Number of clusters created: ',num2str(numel(u_val)-1), ' not equal to requested number (',num2str(n_row*n_col),') !']);
+        %Reorder the clusters from 1 to numel(u_val)-1
+        % Get the unique pixel values and sort them
+        disp('Reassigning pixels ...');
+        sortedValues = sort(u_val);
+
+        % Create a mapping from the original values to the new values
+        valueMap = containers.Map('KeyType', 'double', 'ValueType', 'double');
+        for i = 1:length(sortedValues)
+            valueMap(sortedValues(i)) = i-1;
+        end
+
+        % Reassign the pixel values
+        newImage = zeros(size(MySample));
+        for i = 1:numel(MySample)
+            newImage(i) = valueMap(MySample(i));
+        end
+        MySample=newImage;
+    end
 end
 
 %%

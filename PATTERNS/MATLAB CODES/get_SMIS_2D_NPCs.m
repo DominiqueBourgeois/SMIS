@@ -41,15 +41,9 @@ border=max([border,sep]); % To avoid problems at image borders
 n2=n-2*border;
 m2=m-2*border;
 
-% step_x = round(n2/p);
-% step_y = round(m2/q);
-
-% X=randi(n2,N,1);
-% Y=randi(m2,N,1);
 
 %Define NUP96s positions
 v=1; % pattern id, to be increased for qPALM
-
 max_n_trials=1e+5; % In case of too high density
 n_trial=1;
 for i=1:N
@@ -95,6 +89,34 @@ y_a=m2*xy_a(2,:);
 
 for i=1:na
     MySample(fix(x_a -a_s):fix(x_a ),fix(y_a -a_s):fix(y_a ))=2^16-1;
+end
+
+% Make sure qPALM patterns start at 1
+if qPALM_option==1
+    u_val=unique(MySample);
+    if (numel(u_val)-1)~=16*N
+        MyMessage=['Number of labeled pixels created (',num2str(numel(u_val)-1), ') not equal to number of coordinates (',num2str(numel(16*N)),') !'];
+        disp(MyMessage);
+        MyDlg=warndlg(MyMessage);
+        waitfor(MyDlg)
+        %Reorder the clusters from 1 to numel(u_val)-1
+        % Get the unique pixel values and sort them
+        disp('Reassigning pixels ...');
+        sortedValues = sort(u_val);
+
+        % Create a mapping from the original values to the new values
+        valueMap = containers.Map('KeyType', 'double', 'ValueType', 'double');
+        for i = 1:length(sortedValues)
+            valueMap(sortedValues(i)) = i-1;
+        end
+
+        % Reassign the pixel values
+        newImage = zeros(size(MySample));
+        for i = 1:numel(MySample)
+            newImage(i) = valueMap(MySample(i));
+        end
+        MySample=newImage;
+    end
 end
 
 disp('Done !');

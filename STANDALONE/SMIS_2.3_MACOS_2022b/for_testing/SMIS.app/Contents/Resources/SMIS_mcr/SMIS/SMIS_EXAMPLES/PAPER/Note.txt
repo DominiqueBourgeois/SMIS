@@ -1,4 +1,0 @@
-%%%%%%%%%%%%%%%%%%%%%%%
-Note: some of the simulations can take very long. 
-Reduce the number of fluorophores by a factor of 10 or even 100 to get a quick feeling.
-%%%%%%%%%%%%%%%%%%%%%%%

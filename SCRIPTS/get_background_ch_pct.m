@@ -1,4 +1,4 @@
-function det_im=get_background_ch_pct(det_im, im_par, attenuation_factor, lasers, channel)
+function [det_im, bg_level]=get_background_ch_pct(det_im, im_par, attenuation_factor, lasers, channel)
 
 % PURPOSE:Les
 %   Get background on Channel 1 or 2
@@ -13,6 +13,7 @@ function det_im=get_background_ch_pct(det_im, im_par, attenuation_factor, lasers
 %
 % OUTPUTS:
 %	det_im: the updated detector images 
+%   bg_level: max level of background [ph] before applying Poisson statistics
 %
 % MODIFICATION HISTORY:
 %	D.Bourgeois, September 2019.
@@ -21,8 +22,15 @@ function det_im=get_background_ch_pct(det_im, im_par, attenuation_factor, lasers
 %	D.Bourgeois, September 2021: Make background calculation per s instead
 %	of per frame
 %	D.Bourgeois, September 2022, introduce det_im
+%	D.Bourgeois, December 2024, introduce bg_level
 
-if channel>2; message('Channel does not exist !'); return; end
+
+if channel>2
+    bg_level=[];
+    message('Channel does not exist !'); 
+    return
+end
+
 if channel==1
     bg_p = im_par.bg.bg_ch1*(im_par.raster*0.01)^2; %background per pixel
     bg_laser_sensitivity=im_par.bg.bg_laser_sensitivity_ch1;
@@ -71,10 +79,11 @@ if bg_p>0
                 im_par.frametime*1e-3; % duration [s]
         end
         % the attenuated signal is then
-        bg_fluo=uint16(bg_p*attenuation_factor.*bg_fluo);
+        bg_fluo=bg_p*attenuation_factor.*bg_fluo;
         bg_fluo(bg_fluo==0)=1; % Ensure a minimum value of 1 to preserve from flat bg image
         
-        bg_fluo=imnoise(bg_fluo,'poisson');
+        bg_level=max(bg_fluo(:));
+        bg_fluo=imnoise(uint16(bg_fluo),'poisson');
         
         %Note that there are rounding errors apparently that makes the
         %noise pattern not very smooth along the beam profile
@@ -89,9 +98,9 @@ if bg_p>0
                 im_par.frametime*1e-3; % duration [s]
         end
          % the attenuated signal is then
-        bg_fluo=uint16(bg_p.*bg_fluo);       
-        bg_fluo=imnoise(bg_fluo,'poisson');
-       
+        bg_fluo=bg_p.*bg_fluo;
+        bg_level=max(bg_fluo(:));
+        bg_fluo=imnoise(uint16(bg_fluo),'poisson');  
     end
     
     if channel==1
@@ -99,5 +108,7 @@ if bg_p>0
     else
         det_im.emccd_im_ch2=det_im.emccd_im_ch2+double(bg_fluo);
     end
+else
+    bg_level=0;
 end
 

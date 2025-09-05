@@ -56,6 +56,7 @@ vsn_no='2.3'; % Version number
 %be in rapid exchange or not, virtual samples embedded in SMIS parameters, introduce interactive drawing of FRAP zone, moved new fluorophore definition to main SMIS GUI, few small bug fixes
 %SMIS2.3: Added experimental laser beam profiles
 %SMIS2.3: Added more refined drift options
+%SMIS2.3: Changed imresize for tx_pattern (background fluorescence) 
 
 if ~isdeployed % Take this line off for standalon version
     %Path where the simulation software is loacted
@@ -149,6 +150,7 @@ psf_astigmatism_y=smis_par.obj_and_psf.psf_astigmatism_y; % Astigmatism in Y-dim
 psf_astigmatism_ch1_only=smis_par.obj_and_psf.psf_ch1_only; % Set to 1 if astigmatic PSF to be used only in ch1
 psf_n_zslices=smis_par.obj_and_psf.psf_n_zslices; % # of slices (within sample thickness)for 3D psf
 sample_zcenter=smis_par.obj_and_psf.sample_zcenter; % [nm] shift of sample center in Z relative to plane of focus. Set to 0 for symmetrically centered pattern. Set to -1 for plane of focus at top of sample (e.g. for TIRF mode)
+sample_z_coverslip=smis_par.obj_and_psf.sample_z_coverslip; % [nm] shift of sample center in Z relative to coverslip (for TIRF mode). 
 depth_of_focus=smis_par.obj_and_psf.obj_depth_of_focus; % [nm] Depth of focus of objective/microscope setup. Set to -1 for automated calculation [to be implemented]
 
 n_images=smis_par.n_images; % if yes, # of images
@@ -862,6 +864,7 @@ im_par.obj=struct(...
     'immersion_indice', obj_immersion_indice, ...
     'sample_indice', obj_immersion_sample, ...
     'critical_angle', asin(obj_immersion_sample/obj_immersion_indice), ...
+    'sample_z_coverslip',sample_z_coverslip, ...
     'mic_transmission', obj_mic_transmission, ...
     'eff_from_opening_angle', obj_eff_from_opening_angle, ...
     'eff_a',0, ...
@@ -1116,15 +1119,14 @@ if im_par.bg.add_textured_bg==1
     else
         tx_pattern=im_par.bg.textured_bg_pattern;
     end
-    [tx_pattern,n,m,~]=check_im_size(tx_pattern, im_par.binning);
-    tx_pattern = double(imresize(tx_pattern,1/im_par.binning));
-    if n~=im_par.n || m~=im_par.m
+    tx_pattern = double(imresize(tx_pattern,[im_par.n,im_par.m]));
+    if size(tx_pattern,1)~=im_par.n || size(tx_pattern,2)~=im_par.m
         SMISMessage='Size of textured background image should be the same size as main image size in X and Y dimensions !';
         disp(SMISMessage);
         warndlg(SMISMessage,'Warning')
         smis_ok=0; return
     end
-    tx_pattern(tx_pattern>1)=1; % this pattern must be equal to one wherever there is signala
+    tx_pattern(tx_pattern>1)=1; % this pattern must be equal to one wherever there is signal
 else
     tx_pattern=[];
 end

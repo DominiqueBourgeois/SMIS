@@ -73,6 +73,7 @@ end
 
 %First treat case where the sm can reach a point within pattern
 %at a distance corresponding to the persistence length
+
 if ~isempty(ind_cp)  
     % Get the possible directions (use round values of x y z
     % position to avoid nonsymmetric angular values over full circle)
@@ -115,7 +116,7 @@ if ~isempty(ind_cp)
             else % This should never happen as in this case the molecule should automatically turn around, but just in case
                 disp('Molecule may have hit image border ! ');
                 warning('Setting speed to opposite current speed for current molecule !');
-                v_h_out=-v_h; % Simply set the speed to zero
+                v_h_out=-v_h; % Reverse the speed
                 u_f=[];
             end
         end
