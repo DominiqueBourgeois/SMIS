@@ -166,6 +166,7 @@ add_drift=smis_par.drift.state;
 x_drift=smis_par.drift.dx; % Drift sequence in X dimension [nm]
 y_drift=smis_par.drift.dy; % Drift sequence in Y dimension [nm]
 z_drift=smis_par.drift.dz; % Drift sequence in Z dimension, Only in 3D mode [nm]
+z_drift_range=smis_par.drift.z_drift_range; % Drift range in Z dimension, for PSF calculation, only in 3D mode [nm]
 rot_drift=smis_par.drift.dtheta; % Rotational drift sequence [rad]
 rot_x0=smis_par.drift.rot_x0; % Rotational center [raster]
 rot_y0=smis_par.drift.rot_y0; % Rotational center [raster]
@@ -1056,6 +1057,20 @@ for i=1:n_fluorophores
 end
 im_par.mol_density=mol_density;
 
+%% Prepare Drift
+if add_drift==1
+    im_par.drift.dx=x_drift;
+    im_par.drift.dy=y_drift;
+    im_par.drift.dz=z_drift;
+    im_par.drift.dtheta=rot_drift;
+    im_par.drift.rot_x0=rot_x0;
+    im_par.drift.rot_y0=rot_y0;
+    im_par.drift.z_drift_range=z_drift_range;
+    save_xyz(1:n_fluorophores)=struct; % To keep track of original xyz values which are updated at every frame according to drift
+else
+    im_par.drift.z_drift_range=[0,0]; % Still necessary for psf calculation
+end
+
 %% Get PSF FWHM and define PSF
 %Get PSF FWHM
 sm_par=get_psf_width(n_fluorophores,sm_par,im_par);
@@ -1232,16 +1247,6 @@ if add_diffusion==1
     end
 end
 
-%% Prepare Drift
-if add_drift==1
-    im_par.drift.dx=x_drift;
-    im_par.drift.dy=y_drift;
-    im_par.drift.dz=z_drift;
-    im_par.drift.dtheta=rot_drift;
-    im_par.drift.rot_x0=rot_x0;
-    im_par.drift.rot_y0=rot_y0;
-end
-
 %% Prepare Tiff Images
 im_par=init_EMCCD_frames(im_par,outfiledir,outfilename);
 
@@ -1308,6 +1313,11 @@ for i=1:n_fluorophores
     sms(i).sm_cell=squeeze(struct2cell(sms(i).sm)); % Convert into cell array
     sm_par(i).sm_fn=fieldnames(sms(i).sm); % Store field names
     sm_par(i).idx=get_fields_idx(sm_par(i).sm_fn, im_par); % Get the different field indices to enable easy working with cell arrays
+    if im_par.add_drift==1 % Save x,y,z values as they are updated at every frame according to drift
+        [save_xyz(i).x] = [sms(i).sm.y];
+        [save_xyz(i).y]= [sms(i).sm.y];
+        [save_xyz(i).z]= [sms(i).sm.z];
+    end
 end
 % Also empty the .sm part
 sms=rmfield(sms,'sm');
@@ -1372,6 +1382,13 @@ for frame=1:n_images
         end
     end
 
+    %% Eventually apply drift
+    if add_drift==1
+        for i=1:n_fluorophores
+            sms(i).sm_cell=move_drifting_sm_pct(sms(i).sm_cell, im_par);
+        end
+    end
+
     %% Process photophysical changes during addtime and frametime
 
     % ****** This is the key central script ********
@@ -1395,14 +1412,6 @@ for frame=1:n_images
     %% Eventually apply diffusion
     if add_diffusion==1
         [sms, sm_par] = process_diffusion_pct(sms, sm_par, sm_pattern_indices, im_par, display_par);
-    end
-
-
-    %% Eventually apply drift
-    if add_drift==1
-        for i=1:n_fluorophores
-            sms(i).sm_cell=move_drifting_sm_pct(sms(i).sm_cell, im_par);
-        end
     end
 
     %% Get the fluorescence and emission spectra
@@ -1471,6 +1480,11 @@ for i=1:n_fluorophores
     sms(i).sm=sm;
     for k=1:numel(sm_par(i).sm_fn)
         [sms(i).sm.(sm_par(i).sm_fn{k})] = sms(i).sm_cell{k,:};
+    end
+    if add_drift==1 % Put back the original xyz values
+        newVals = num2cell([save_xyz(i).x]); [sms(i).sm.x] = newVals{:};
+        newVals = num2cell([save_xyz(i).y]); [sms(i).sm.y] = newVals{:};
+        newVals = num2cell([save_xyz(i).z]); [sms(i).sm.z] = newVals{:};
     end
 end
 

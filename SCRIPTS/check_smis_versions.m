@@ -76,7 +76,16 @@ if ~isfield(smis_par.drift,'x1')
     smis_par.drift=rmfield(smis_par.drift,'y_drift');
     smis_par.drift=rmfield(smis_par.drift,'z_drift');
     smis_par.drift=rmfield(smis_par.drift,'rot_drift');
+end
 
+% Update z_drift_range for 3D PSF calculation smis vsn2.3
+if ~isfield(smis_par.drift,'z_drift_range')
+    if smis_par.drift.state==1
+        cz=cumsum(smis_par.drift.dz); % Cumulative drift in z
+        smis_par.drift.z_drift_range=[min(cz),max(cz)];
+    else
+        smis_par.drift.z_drift_range=[0,0];
+    end
 end
 
 % Update sample height corresponding to coverslip position smis vsn2.3

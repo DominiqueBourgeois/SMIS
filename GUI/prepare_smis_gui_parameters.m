@@ -93,7 +93,8 @@ smis_gui_parameters.drift = struct(...
     'dx',[], ... % x drift array along frames
     'dy',[], ... % y drift array along frames
     'dz',[], ... % z drift array along frames
-    'dtheta',[] ... % rotational drift array along frames
+    'dtheta',[], ... % rotational drift array along frames
+    'z_drift_range',[0,0] ... % z drift range
     );
 
 % Initialize objective and PSF

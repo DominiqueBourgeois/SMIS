@@ -17,6 +17,8 @@ function [dx,dy,dz, dtheta, cdx, cdy, cdz]=calculate_drift(drift,n,simul_3D, x_p
 %
 % MODIFICATION HISTORY:
 %	D.Bourgeois, June 2024
+%	D.Bourgeois, October 2025: removed correction to prevent drift at start
+
 
 % Initialize cumulated drift
 cdz=[];
@@ -26,7 +28,7 @@ frames=1:n; % Frame numbers
 dx=drift.x1+frames/n.*drift.x2+(frames/n).^2*drift.x3+drift.x_n*randn(1,n); % X drift in [nm]
 if ~isempty(drift.x_eval)
     x_fun=eval(drift.x_eval);
-    x_fun=x_fun-x_fun(1); % Prevent jumps in drift at start
+    % x_fun=x_fun-x_fun(1); % Prevent jumps in drift at start
     if size(x_fun,1)~=size(dx,1)
         dx=dx+x_fun';
     else
@@ -37,7 +39,7 @@ end
 dy=drift.y1+frames/n.*drift.y2+(frames/n).^2*drift.y3+drift.y_n*randn(1,n); % Y drift in [nm]
 if ~isempty(drift.y_eval)
     y_fun=eval(drift.y_eval);
-    y_fun=y_fun-y_fun(1); % Prevent jumps in drift at start
+    % y_fun=y_fun-y_fun(1); % Prevent jumps in drift at start
     if size(y_fun,1)~=size(dy,1)
         dy=dy+y_fun';
     else
@@ -49,7 +51,7 @@ if simul_3D==1 % 3D mode
     dz=drift.z1+frames/n.*drift.z2+(frames/n).^2*drift.z3+drift.z_n*randn(1,n); % Z drift in [nm]
     if ~isempty(drift.z_eval)
         z_fun=eval(drift.z_eval);
-        z_fun=z_fun-z_fun(1); % Prevent jumps in drift at start
+        % z_fun=z_fun-z_fun(1); % Prevent jumps in drift at start
         if size(z_fun,1)~=size(dz,1)
             dz=dz+z_fun';
         else
@@ -71,7 +73,7 @@ if drift.rot_theta~=0 || drift.rot_n~=0 || strcmp(drift.rot_eval,'')~=1
     dtheta=(drift.rot_theta+drift.rot_n*randn(1,n))*pi/180; % [rad]
     if ~isempty(drift.rot_eval)
         rot_fun=eval(drift.rot_eval);
-        rot_fun=rot_fun-rot_fun(1); % Prevent jumps in drift at start
+        % rot_fun=rot_fun-rot_fun(1); % Prevent jumps in drift at start
         dtheta=dtheta+rot_fun; % 
     end
   

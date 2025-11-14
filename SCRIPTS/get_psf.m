@@ -19,6 +19,8 @@ function sm_par=get_psf(n_fluorophores, sm_par, im_par, psf_mode, channel, simul
 % MODIFICATION HISTORY:
 %	D.Bourgeois, May 2019.
 %	D.Bourgeois, September 2022.
+%	D.Bourgeois, October 2025. Include z-drift parameters to calculate psf
+%	extension in axial direction
 %-
 
 for i=1:n_fluorophores
@@ -49,14 +51,25 @@ for i=1:n_fluorophores
                     psf=psf/sum(sum(psf));
                 else
                     %calculate a psf kernel over the image z length
-                    nslices=im_par.psf_n_zslices;
-                    image_height=im_par.raster*im_par.nz; % in [nm]
+                    image_height=im_par.raster*im_par.nz+im_par.drift.z_drift_range(2)-(im_par.drift.z_drift_range(1)<0)*im_par.drift.z_drift_range(1); % in [nm]
+                    nslices=ceil(im_par.psf_n_zslices*image_height/(im_par.raster*im_par.nz)); % Scale to take into account extension due to drift
+                    if any(im_par.drift.z_drift_range)
+                        nz_with_drift=image_height/im_par.raster;
+                        %If nz is even make nslices an odd number
+                        if mod(nz_with_drift,2)==0 && mod(nslices,2)==0
+                            nslices=nslices+1;
+                        end
+                        %If nz is odd make nslices an even number
+                        if mod(nz_with_drift,2)==1 && mod(nslices,2)==1
+                            nslices=nslices+1;
+                        end
+                    end
                     d=im_par.depth_of_focus; % in [nm]
                     zc=im_par.sample_zcenter; % in [nm]
                     if zc==-1 % Case of focal plane at top of sample (for inverted microscope)
                         zc=image_height/2;
                     end
-                    c=im_par.nz/2*im_par.raster; % Set focal plane at mid sample height
+                    c=im_par.nz/2*im_par.raster-(im_par.drift.z_drift_range(1)<0)*im_par.drift.z_drift_range(1); % Set focal plane at mid sample height when no drift
                     sig=psf_width/2.35/im_par.raster; % in pixels
                     psf(1:nslices)=struct('plane',[],'rbox_x',[],'rbox_y',[]);
                     if channel==2 && im_par.psf_astigmatism_ch1_only==1 % Supress astigmatism in this case
@@ -67,9 +80,9 @@ for i=1:n_fluorophores
                         ABy=im_par.psf_astigmatism_y;
                     end
                     
-                    slice_step=image_height/nslices;
+                    slice_step=image_height/(nslices-1); % [nm]
                     for k=1:nslices
-                        z=k*slice_step+zc; % Should go through the entire image height
+                        z=(k-1)*slice_step+zc; % Should go through the entire image height. 
                         sig_x=sig*sqrt(max([1e-20,1+((z-c)/d)^2+ABx(1)*((z-c)/d)^3+ABx(2)*((z-c)/d)^4])); % in pixels
                         sig_y=sig*sqrt(max([1e-20,1+((z-c)/d)^2+ABy(1)*((z-c)/d)^3+ABy(2)*((z-c)/d)^4])); % in pixels
 

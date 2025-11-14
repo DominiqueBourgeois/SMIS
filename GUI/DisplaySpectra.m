@@ -1,4 +1,4 @@
-function spectra_figure_number=DisplaySpectra(smis_gui_parameters)
+function spectra_figure=DisplaySpectra(smis_gui_parameters)
 %
 % PURPOSE:
 %   Display fluorophore spectra
@@ -7,7 +7,7 @@ function spectra_figure_number=DisplaySpectra(smis_gui_parameters)
 % smis_gui_parameters: the GUI parameters
 %
 % OUTPUTS:
-%   spectra_figure_number: updated spectra_figure_number
+%   spectra_figure: updated spectra_figure
 %
 % MODIFICATION HISTORY:
 %	D.Bourgeois, February 2021.
@@ -25,7 +25,7 @@ n_fig=size(figHandles,1);
 for k=1:n_fig
     if strcmp(figHandles(k).Name,'Abs/Exc and Emission Spectra')==1 % Our figure already exists
         create_figure=0;
-        spectra_figure_number=figHandles(k).Number;
+        spectra_figure=figHandles(k);
     end
 end
 
@@ -37,8 +37,6 @@ if create_figure==1
     w_xsize=scrsz(3)*3/4;
     w_ysize=scrsz(4)*3/4;
     spectra_figure=figure;
-    spectra_figure_number=spectra_figure.Number;
-
     colormap(gray);
     set(spectra_figure,'color','white');
     set(spectra_figure,'Position',[10 scrsz(4)/10 w_xsize w_ysize])
@@ -46,7 +44,7 @@ if create_figure==1
     set(spectra_figure,'Name','Abs/Exc and Emission Spectra');
     set(spectra_figure,'NumberTitle','off');
 else
-    figure(spectra_figure_number);
+    figure(spectra_figure);
     clf
 end
 

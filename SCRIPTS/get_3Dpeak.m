@@ -22,7 +22,6 @@ function peak=get_3Dpeak(x,y,z,n_phot,sm_par,im_par,state,channel)
 %	D.Bourgeois, September 2020: Returns empty peak if outside z range. Changed 3D case
 %	D.Bourgeois, March 2022: Correct mapping between z position and psf slice
 %-
-
 show_peak=0; % set to 1 to see the peak
 
 if channel==1
@@ -41,16 +40,32 @@ r_xy = [x-round(x),y-round(y)]; % rounded x and y
 %get_3Dpeak
 %Get the psf slice adequate for z position
 
-% z goes from 0.5 to im_par.nz+0.5
-% n_psf_slice must go from 1 to im_par.psf_n_zslices, ie f(0.5)=1 & f(im_par.nz+0.5)=im_par.psf_n_zslices
-a_=(im_par.psf_n_zslices-1)/(im_par.nz);
-b_ = 1-0.5*a_;
 
-% n_psf_slice=(z+0.5)*im_par.psf_n_zslices/im_par.nz;
-n_psf_slice=z*a_+b_;
+if im_par.add_drift==0 % Case of no drift
+    % z goes from 0.5 to im_par.nz+0.5
+    % n_psf_slice must go from 1 to im_par.psf_n_zslices, ie f(0.5)=1 & f(im_par.nz+0.5)=im_par.psf_n_zslices
 
-bottom_psf_slice=max([fix(n_psf_slice),1]);
-top_psf_slice=min([ceil(n_psf_slice),im_par.psf_n_zslices]);
+    a_=(im_par.psf_n_zslices-1)/(im_par.nz);
+    b_ = 1-0.5*a_;
+
+    n_psf_slice=z*a_+b_;
+
+    bottom_psf_slice=max([fix(n_psf_slice),1]);
+    top_psf_slice=min([ceil(n_psf_slice),im_par.psf_n_zslices]);
+elseif any(im_par.drift.z_drift_range) % Case of z drift
+    psf_n_zslices=numel(psf); 
+    z_min=(im_par.drift.z_drift_range(1)<0)*im_par.drift.z_drift_range(1)/im_par.raster;
+    z_max=im_par.nz+im_par.drift.z_drift_range(2)/im_par.raster;
+    nz=z_max-z_min;
+    a_=(psf_n_zslices-1)/nz;
+    b_ = 1-0.5*a_;
+
+    n_psf_slice=(z-z_min)*a_+b_;
+    bottom_psf_slice=max([fix(n_psf_slice),1]);
+    top_psf_slice=min([ceil(n_psf_slice),psf_n_zslices]);
+end
+
+
 if bottom_psf_slice<=size(psf,2) && top_psf_slice<=size(psf,2) && bottom_psf_slice>0 && top_psf_slice>0 % Check that molecule has not diffused away
     if mod(n_psf_slice,bottom_psf_slice)>0  %get some kind of interpolation !
         % Handle case where psf at top_psf_slice and bottom_psf_slice are

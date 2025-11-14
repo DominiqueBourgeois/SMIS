@@ -21,6 +21,7 @@ function N=get_number_of_absorbed_photons_pct(sm, lasers, sm_par, im_par, sampli
 %	D.Bourgeois, November 2020. Added TIRF or HILO modes
 %   D.Bourgeois, November 2021, Corrected a bug for N<1 photons: the use of "round" was incorrect !!
 %	D.Bourgeois, September 2022. Adapted for pct toolbox
+%	D.Bourgeois, November 2025. Adapted for z_drift
 
 avogadro = 6.02e+23; % [mol-1]
 
@@ -55,12 +56,21 @@ end
 
 % Get sm coordinates
 if im_par.simul_3D==1
-    [x,y,z]=get_coordinates_on_detector_pct(sm{x_idx},sm{y_idx},sm{z_idx}, im_par.binning); % x,y,z in raster
+    [x,y,z]=get_coordinates_on_detector_pct(sm{x_idx},sm{y_idx},sm{z_idx}, im_par.binning); % x,y,z in raster units
     % do nothing if the molecule is out of the FOV including in Z (for
     % diffusion measurements, care should be taken to choose a sufficiently thick sample 
-    if round(x)<=0 || round(x)>im_par.n || round(y)<=0 || round(y)>im_par.m || round(z)<=0 || round(z)>im_par.nz % only calculate if molecule within FOV
-        N=zeros(1,sm_par.n_states); % No photon absorbed
-        return
+    if im_par.add_drift==0
+        if round(x)<=0 || round(x)>im_par.n || round(y)<=0 || round(y)>im_par.m || round(z)<=0 || round(z)>im_par.nz % only calculate if molecule within FOV
+            N=zeros(1,sm_par.n_states); % No photon absorbed
+            return
+        end
+    else % If there is drift, we need to extend the accessible z range 
+        z_min=im_par.drift.z_drift_range(1)/im_par.raster;
+        z_max=im_par.nz+im_par.drift.z_drift_range(2)/im_par.raster;
+        if round(x)<=0 || round(x)>im_par.n || round(y)<=0 || round(y)>im_par.m || round(z)<=z_min || round(z)>z_max % only calculate if molecule within FOV
+            N=zeros(1,sm_par.n_states); % No photon absorbed
+            return
+        end
     end
 else
     [x,y,~]=get_coordinates_on_detector_pct(sm{x_idx},sm{y_idx},[], im_par.binning); % x,y,z in raster

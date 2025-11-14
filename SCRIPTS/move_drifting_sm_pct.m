@@ -54,8 +54,9 @@ y=y + im_par.drift.dy(frame)/raster;
 
 if im_par.simul_3D==1 % 3D mode
     z=z + im_par.drift.dz(frame)/raster;
-    z = min(z,im_par.nz+0.49999); % Do not get out of the field of view
-    z = max(z,0.50001);
+    % z
+    % z = min(z,im_par.nz+0.49999); % Do not get out of the field of view
+    % z = max(z,0.50001);
 end
 
 % Update coordinates on high res image
